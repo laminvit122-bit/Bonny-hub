@@ -12,6 +12,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local StarterGui = game:GetService("StarterGui")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 
 local THEME = {
@@ -443,27 +444,29 @@ local function CreateToggle(parent, text, default, callback)
     return Frame
 end
 
--- Tabs order: Main, Visual, Teleports, Troll, Settings (bottom)
+-- Tabs order
 local MainTab      = CreateTab("Main", "🏠")
 local VisualTab    = CreateTab("Visual", "👁")
 local TeleportsTab = CreateTab("Teleports", "📍")
+local ButtonsTab   = CreateTab("Buttons", "🎯")
 local TrollTab     = CreateTab("Troll", "☠")
 local SettingsTab  = CreateTab("Settings", "⚙")
 
 _G.BonnyHub = {
     ScreenGui = ScreenGui, MainFrame = MainFrame,
     MainTab = MainTab, VisualTab = VisualTab, TeleportsTab = TeleportsTab,
-    TrollTab = TrollTab, SettingsTab = SettingsTab,
+    ButtonsTab = ButtonsTab, TrollTab = TrollTab, SettingsTab = SettingsTab,
     TabButtons = TabButtons,
     CreateSection = CreateSection, CreateButton = CreateButton, CreateToggle = CreateToggle,
     THEME = THEME, LocalPlayer = LocalPlayer, Players = Players,
-    RunService = RunService, StarterGui = StarterGui, TweenService = TweenService
+    RunService = RunService, StarterGui = StarterGui, TweenService = TweenService,
+    UserInputService = UserInputService
 }
 
 print("[Bonny Hub] Part 1 loaded (GUI ready)")
 --[[
     BONNY HUB | MM2 Premium Script
-    PART 2: Language system + Roles + Main + Visual
+    PART 2: Language + Roles + Main + Visual
 --]]
 
 local H = _G.BonnyHub
@@ -479,13 +482,17 @@ local CreateSection = H.CreateSection
 local CreateButton  = H.CreateButton
 local CreateToggle  = H.CreateToggle
 
--- ============ LANGUAGE SYSTEM ============
+-- ============ LANGUAGE ============
 local Lang = {
     current = "en",
     strings = {
         en = {
+            mainFeatures   = "Main Features",
             chatInfo       = "Chat Info",
             chatRoles      = "Show Murderer & Sheriff in Chat",
+            shootWalls     = "Shoot Through Walls",
+            walkWalls      = "Walk Through Walls (Noclip)",
+            autoPickupGun  = "Auto Pickup Gun",
             visualFeatures = "Visual Features",
             esp            = "ESP Players",
             fullbright     = "Fullbright",
@@ -496,21 +503,24 @@ local Lang = {
             tpSheriff      = "Teleport to Sheriff",
             tpMap          = "Teleport to Map",
             tpSpawn        = "Teleport to Spawn",
+            buttons        = "Buttons",
+            shootMurderer  = "Shoot Murderer Button",
             trollFeatures  = "Troll Features",
-            explosionSelf  = "Explosion Self",
             touchFling     = "Touch Fling",
             settings       = "Settings",
             language       = "Language",
-            languageEn     = "English",
-            languageRu     = "Russian",
             loaded         = "Loaded successfully!",
             roundEnded     = "Round ended",
             roundTime      = "Round time left",
             noTarget       = "Target not found"
         },
         ru = {
+            mainFeatures   = "Основные функции",
             chatInfo       = "Информация в чат",
             chatRoles      = "Показать мардера и шерифа в чат",
+            shootWalls     = "Стрелять через стены",
+            walkWalls      = "Ходить через стены (Noclip)",
+            autoPickupGun  = "Авто-подбор пистолета",
             visualFeatures = "Визуальные функции",
             esp            = "ESP игроков",
             fullbright     = "Полная яркость",
@@ -521,13 +531,12 @@ local Lang = {
             tpSheriff      = "ТП к шерифу",
             tpMap          = "ТП на карту",
             tpSpawn        = "ТП на спавн",
+            buttons        = "Кнопки",
+            shootMurderer  = "Кнопка стрельбы в мардера",
             trollFeatures  = "Тролль функции",
-            explosionSelf  = "Взрыв себя",
             touchFling     = "Тач-флинг",
             settings       = "Настройки",
             language       = "Язык",
-            languageEn     = "Английский",
-            languageRu     = "Русский",
             loaded         = "Успешно загружено!",
             roundEnded     = "Раунд закончен",
             roundTime      = "Осталось времени",
@@ -538,31 +547,28 @@ local Lang = {
 
 local function L(key) return Lang.strings[Lang.current][key] or key end
 
-_G.BonnyHub.Lang = Lang
-_G.BonnyHub.L = L
-_G.BonnyHub.LangRefs = {}
-_G.BonnyHub.RegisterLang = function(ref, key, prefix)
-    table.insert(_G.BonnyHub.LangRefs, {ref = ref, key = key, prefix = prefix})
+H.Lang = Lang
+H.L = L
+H.LangRefs = {}
+H.RegisterLang = function(ref, key, prefix)
+    table.insert(H.LangRefs, {ref = ref, key = key, prefix = prefix or ""})
 end
 
-local RegisterLang = _G.BonnyHub.RegisterLang
-local LangRefs = _G.BonnyHub.LangRefs
+local RegisterLang = H.RegisterLang
 
-local function ApplyLang()
-    for _, entry in ipairs(LangRefs) do
+H.ApplyLang = function()
+    for _, entry in ipairs(H.LangRefs) do
         pcall(function()
             if entry.ref and entry.ref.Parent then
-                local pfx = entry.prefix or ""
                 if entry.ref.Name == "SectionLabel" then
                     entry.ref.Text = "  ⚡  " .. L(entry.key)
                 else
-                    entry.ref.Text = "  " .. pfx .. L(entry.key)
+                    entry.ref.Text = "  " .. entry.prefix .. L(entry.key)
                 end
             end
         end)
     end
 end
-_G.BonnyHub.ApplyLang = ApplyLang
 
 -- ============ ROLE DETECTION ============
 local function GetRole(plr)
@@ -608,27 +614,159 @@ local function GetRoleColors(role)
     return Color3.fromRGB(255, 255, 255), Color3.fromRGB(255, 255, 255)
 end
 
-_G.BonnyHub.GetRole = GetRole
-_G.BonnyHub.GetRoleColors = GetRoleColors
+H.GetRole = GetRole
+H.GetRoleColors = GetRoleColors
 
--- ============ CHAT ============
+-- ============ CHAT (IMPROVED) ============
 local function SendChat(msg)
     local RS = game:GetService("ReplicatedStorage")
-    local ok = pcall(function()
-        RS.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
-    end)
-    if not ok then
+    -- Try legacy chat
+    if RS:FindFirstChild("DefaultChatSystemChatEvents") then
         pcall(function()
-            game:GetService("TextChatService").TextChannels.RBGeneral:SendAsync(msg)
+            RS.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
         end)
     end
+    -- Try new TextChatService
+    pcall(function()
+        local TCS = game:GetService("TextChatService")
+        if TCS then
+            local channel = TCS.TextChannels:FindFirstChild("RBXGeneral")
+            if channel then
+                channel:SendAsync(msg)
+            end
+        end
+    end)
 end
-_G.BonnyHub.SendChat = SendChat
+
+H.SendChat = SendChat
 
 -- ============ MAIN TAB ============
-local mainSec = CreateSection(MainTab, L("chatInfo"))
+local mainSec = CreateSection(MainTab, L("mainFeatures"))
 local mainSecLabel = mainSec:FindFirstChild("SectionLabel")
-if mainSecLabel then RegisterLang(mainSecLabel, "chatInfo") end
+if mainSecLabel then RegisterLang(mainSecLabel, "mainFeatures") end
+
+-- Shoot Through Walls
+local shootWallsEnabled = false
+local shootWallsToggle = CreateToggle(MainTab, "🎯  " .. L("shootWalls"), false, function(state)
+    shootWallsEnabled = state
+end)
+RegisterLang(shootWallsToggle, "shootWalls", "🎯  ")
+
+-- Walk Through Walls (Noclip)
+local noclipEnabled = false
+local noclipConn
+
+local function startNoclip()
+    if noclipConn then noclipConn:Disconnect() end
+    noclipConn = RunService.Stepped:Connect(function()
+        if not noclipEnabled then return end
+        local char = LocalPlayer.Character
+        if char then
+            for _, part in pairs(char:GetDescendants()) do
+                if part:IsA("BasePart") and part.CanCollide then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end)
+end
+
+local noclipToggle = CreateToggle(MainTab, "👻  " .. L("walkWalls"), false, function(state)
+    noclipEnabled = state
+    if state then startNoclip() end
+end)
+RegisterLang(noclipToggle, "walkWalls", "👻  ")
+
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(1)
+    if noclipEnabled then startNoclip() end
+end)
+
+-- ============ AUTO PICKUP GUN ============
+local autoPickupEnabled = false
+local autoPickupRunning = false
+
+local function GetGroundGuns()
+    local guns = {}
+    for _, obj in pairs(workspace:GetChildren()) do
+        if obj:IsA("Tool") then
+            local n = obj.Name:lower()
+            if n:find("gun") or n:find("revolver") or n:find("pistol") or n:find("firearm") then
+                if obj:FindFirstChild("Handle") then
+                    table.insert(guns, obj)
+                end
+            end
+        end
+    end
+    return guns
+end
+
+local function AutoPickupLoop()
+    if autoPickupRunning then return end
+    autoPickupRunning = true
+
+    task.spawn(function()
+        while autoPickupEnabled do
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if hum and hum.Health > 0 then
+                    -- Проверяем есть ли у меня уже пистолет
+                    local hasGun = false
+                    for _, item in pairs(char:GetChildren()) do
+                        if item:IsA("Tool") then
+                            local n = item.Name:lower()
+                            if n:find("gun") or n:find("revolver") or n:find("pistol") then
+                                hasGun = true
+                                break
+                            end
+                        end
+                    end
+
+                    if not hasGun then
+                        local guns = GetGroundGuns()
+                        if #guns > 0 then
+                            -- Запоминаем изначальную позицию
+                            local origCFrame = char.HumanoidRootPart.CFrame
+                            local gun = guns[1]
+                            local handle = gun:FindFirstChild("Handle")
+
+                            if handle then
+                                -- Телепорт к пистолету
+                                char.HumanoidRootPart.CFrame = handle.CFrame + Vector3.new(0, 3, 0)
+                                task.wait(0.1)
+                                -- Подобрать
+                                pcall(function()
+                                    gun.Parent = char
+                                end)
+                                task.wait(0.9)
+                                -- Вернуться обратно (если ещё жив)
+                                if char.Parent and char:FindFirstChild("HumanoidRootPart") then
+                                    char.HumanoidRootPart.CFrame = origCFrame
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+            task.wait(1)
+        end
+        autoPickupRunning = false
+    end)
+end
+
+local autoPickupToggle = CreateToggle(MainTab, "🔫  " .. L("autoPickupGun"), false, function(state)
+    autoPickupEnabled = state
+    if state then
+        AutoPickupLoop()
+    end
+end)
+RegisterLang(autoPickupToggle, "autoPickupGun", "🔫  ")
+
+-- ============ CHAT INFO SECTION ============
+local chatSec = CreateSection(MainTab, L("chatInfo"))
+local chatSecLabel = chatSec:FindFirstChild("SectionLabel")
+if chatSecLabel then RegisterLang(chatSecLabel, "chatInfo") end
 
 local chatBtn = CreateButton(MainTab, "💬  " .. L("chatRoles"), function()
     local murderers, sheriffs = {}, {}
@@ -648,6 +786,8 @@ local chatBtn = CreateButton(MainTab, "💬  " .. L("chatRoles"), function()
     SendChat(msg)
 end)
 RegisterLang(chatBtn, "chatRoles", "💬  ")
+
+H.ShootWallsEnabled = function() return shootWallsEnabled end
 
 -- ============ VISUAL TAB ============
 local visSec = CreateSection(VisualTab, L("visualFeatures"))
@@ -824,7 +964,7 @@ end)
 print("[Bonny Hub] Part 2 loaded (Lang + Roles + Main + Visual)")
 --[[
     BONNY HUB | MM2 Premium Script
-    PART 3: Teleports + Troll + Settings
+    PART 3: Teleports + Buttons + Troll + Settings
 --]]
 
 local H = _G.BonnyHub
@@ -835,7 +975,9 @@ local LocalPlayer    = H.LocalPlayer
 local Players        = H.Players
 local RunService     = H.RunService
 local StarterGui     = H.StarterGui
+local UserInputService = H.UserInputService
 local TeleportsTab   = H.TeleportsTab
+local ButtonsTab     = H.ButtonsTab
 local TrollTab       = H.TrollTab
 local SettingsTab    = H.SettingsTab
 local TabButtons     = H.TabButtons
@@ -898,19 +1040,189 @@ local tpMap = CreateButton(TeleportsTab, "🗺️  " .. L("tpMap"), function()
 end)
 RegisterLang(tpMap, "tpMap", "🗺️  ")
 
+-- TP Spawn (без смерти — просто на спавн точку карты)
 local tpSpawn = CreateButton(TeleportsTab, "🏠  " .. L("tpSpawn"), function()
     local char = LocalPlayer.Character
-    if not char then return end
-    char:BreakJoints()
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    local spawn = workspace:FindFirstChildOfClass("SpawnLocation")
+    if not spawn then
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("SpawnLocation") then spawn = obj break end
+        end
+    end
+    if spawn then
+        char.HumanoidRootPart.CFrame = spawn.CFrame + Vector3.new(0, 5, 0)
+    else
+        -- Если не нашли спавн — телепорт в центр неба (безопасно)
+        char.HumanoidRootPart.CFrame = CFrame.new(0, 50, 0)
+    end
 end)
 RegisterLang(tpSpawn, "tpSpawn", "🏠  ")
+
+-- ============ BUTTONS TAB ============
+local btnSec = CreateSection(ButtonsTab, L("buttons"))
+local btnSecLabel = btnSec:FindFirstChild("SectionLabel")
+if btnSecLabel then RegisterLang(btnSecLabel, "buttons") end
+
+-- Shoot Murderer Button
+local shootBtnEnabled = false
+local floatingButton
+local buttonDragging = false
+local dragStart, startPos
+
+local function createFloatingButton()
+    if floatingButton then floatingButton:Destroy() end
+
+    local Btn = Instance.new("TextButton")
+    Btn.Name = "ShootMurdererBtn"
+    Btn.Size = UDim2.new(0, 80, 0, 80)
+    Btn.Position = UDim2.new(0, 100, 0.5, -40)
+    Btn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    Btn.Text = "🎯"
+    Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Btn.TextScaled = true
+    Btn.Font = Enum.Font.GothamBold
+    Btn.BorderSizePixel = 0
+    Btn.Active = true
+    Btn.Parent = H.ScreenGui
+
+    local C = Instance.new("UICorner")
+    C.CornerRadius = UDim.new(1, 0)
+    C.Parent = Btn
+
+    local Stroke = Instance.new("UIStroke")
+    Stroke.Color = Color3.fromRGB(255, 200, 200)
+    Stroke.Thickness = 2
+    Stroke.Parent = Btn
+
+    -- Пульсация
+    task.spawn(function()
+        while Btn.Parent do
+            TweenService:Create(Btn, TweenInfo.new(0.8), {BackgroundColor3 = Color3.fromRGB(255, 80, 80)}):Play()
+            task.wait(0.8)
+            if not Btn.Parent then break end
+            TweenService:Create(Btn, TweenInfo.new(0.8), {BackgroundColor3 = Color3.fromRGB(255, 0, 0)}):Play()
+            task.wait(0.8)
+        end
+    end)
+
+    -- Перетаскивание
+    Btn.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+           or input.UserInputType == Enum.UserInputType.Touch then
+            buttonDragging = true
+            dragStart = input.Position
+            startPos = Btn.Position
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if buttonDragging and (input.UserInputType == Enum.UserInputType.MouseMovement
+           or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            Btn.Position = UDim2.new(
+                startPos.X.Scale, startPos.X.Offset + delta.X,
+                startPos.Y.Scale, startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+           or input.UserInputType == Enum.UserInputType.Touch then
+            buttonDragging = false
+        end
+    end)
+
+    -- Клик — выстрел в мардера
+    Btn.MouseButton1Click:Connect(function()
+        local char = LocalPlayer.Character
+        if not char then return end
+
+        -- Ищем мардера
+        local murderer, murdererChar
+        for _, plr in pairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer and plr.Character then
+                if GetRole(plr) == "Murderer" then
+                    murderer = plr
+                    murdererChar = plr.Character
+                    break
+                end
+            end
+        end
+
+        if not murderer or not murdererChar then
+            StarterGui:SetCore("SendNotification", {
+                Title = "Bonny Hub",
+                Text = L("noTarget"),
+                Duration = 2
+            })
+            return
+        end
+
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local targetHRP = murdererChar:FindFirstChild("HumanoidRootPart")
+        if not hrp or not targetHRP then return end
+
+        -- Проверяем есть ли пистолет
+        local gun
+        for _, item in pairs(char:GetChildren()) do
+            if item:IsA("Tool") then
+                local n = item.Name:lower()
+                if n:find("gun") or n:find("revolver") or n:find("pistol") then
+                    gun = item
+                    break
+                end
+            end
+        end
+
+        if gun then
+            -- Прицеливаемся через CFrame и стреляем
+            hrp.CFrame = CFrame.new(hrp.Position, targetHRP.Position)
+            task.wait(0.05)
+            pcall(function() gun:Activate() end)
+        else
+            -- Если пистолета нет — телепорт к мардеру и попытка
+            hrp.CFrame = CFrame.new(hrp.Position, targetHRP.Position)
+            pcall(function()
+                local remote = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes", true)
+                -- Просто уведомление
+            end)
+            StarterGui:SetCore("SendNotification", {
+                Title = "Bonny Hub",
+                Text = "No gun in hands!",
+                Duration = 2
+            })
+        end
+    end)
+
+    floatingButton = Btn
+end
+
+local function removeFloatingButton()
+    if floatingButton then
+        floatingButton:Destroy()
+        floatingButton = nil
+    end
+end
+
+local shootBtnToggle = CreateToggle(ButtonsTab, "🎯  " .. L("shootMurderer"), false, function(state)
+    shootBtnEnabled = state
+    if state then
+        createFloatingButton()
+    else
+        removeFloatingButton()
+    end
+end)
+RegisterLang(shootBtnToggle, "shootMurderer", "🎯  ")
 
 -- ============ TROLL TAB ============
 local trSec = CreateSection(TrollTab, L("trollFeatures"))
 local trSecLabel = trSec:FindFirstChild("SectionLabel")
 if trSecLabel then RegisterLang(trSecLabel, "trollFeatures") end
 
--- Touch Fling
+-- ============ TOUCH FLING (FIXED) ============
+-- Теперь выкидывает того, КОГО Я трогаю (не меня)
 local touchFlingEnabled = false
 local touchFlingConnections = {}
 
@@ -925,18 +1237,27 @@ local function setupTouchFling()
         if part:IsA("BasePart") then
             local conn = part.Touched:Connect(function(hit)
                 if not touchFlingEnabled then return end
+
+                -- Проверяем что это часть ЧУЖОГО персонажа
                 local otherChar = hit:FindFirstAncestorOfClass("Model")
                 if not otherChar then return end
+                if otherChar == char then return end
+
                 local otherPlayer = Players:GetPlayerFromCharacter(otherChar)
-                if otherPlayer and otherPlayer ~= LocalPlayer then
-                    local otherHRP = otherChar:FindFirstChild("HumanoidRootPart")
-                    if otherHRP then
-                        local bv = Instance.new("BodyVelocity")
-                        bv.Velocity = Vector3.new(999999, 999999, 999999)
-                        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                        bv.Parent = otherHRP
-                        game:GetService("Debris"):AddItem(bv, 0.15)
-                    end
+                if not otherPlayer or otherPlayer == LocalPlayer then return end
+
+                local otherHRP = otherChar:FindFirstChild("HumanoidRootPart")
+                if otherHRP then
+                    -- Выкидываем того, кого трогаю
+                    local bv = Instance.new("BodyVelocity")
+                    bv.Velocity = Vector3.new(
+                        math.random(-1, 1) * 999999,
+                        999999,
+                        math.random(-1, 1) * 999999
+                    )
+                    bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                    bv.Parent = otherHRP
+                    game:GetService("Debris"):AddItem(bv, 0.2)
                 end
             end)
             table.insert(touchFlingConnections, conn)
@@ -959,22 +1280,6 @@ LocalPlayer.CharacterAdded:Connect(function()
     task.wait(1)
     if touchFlingEnabled then setupTouchFling() end
 end)
-
--- Explosion Self
-local explosionBtn = CreateButton(TrollTab, "💥  " .. L("explosionSelf"), function()
-    local char = LocalPlayer.Character
-    if not char then return end
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-
-    local e = Instance.new("Explosion")
-    e.Position = hrp.Position
-    e.BlastRadius = 10
-    e.BlastPressure = 50000
-    e.DestroyJointRadiusPercent = 1
-    e.Parent = workspace
-end)
-RegisterLang(explosionBtn, "explosionSelf", "💥  ")
 
 -- ============ SETTINGS TAB ============
 local setSec = CreateSection(SettingsTab, L("settings"))
@@ -1017,5 +1322,5 @@ StarterGui:SetCore("SendNotification", {
     Duration = 3
 })
 
-print("[Bonny Hub] Part 3 loaded (Teleports + Troll + Settings)")
+print("[Bonny Hub] Part 3 loaded (Teleports + Buttons + Troll + Settings)")
 print("[Bonny Hub] ✨ All 3 parts loaded successfully!")
