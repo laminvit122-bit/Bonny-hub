@@ -1,7 +1,6 @@
 --[[
     Bonny Hub | MM2 Script
     ЧАСТЬ 1: GUI, дизайн, вкладки, элементы
-    Вставь ЧАСТЬ 2 после этого кода
 --]]
 
 if _G.BonnyHubLoaded then
@@ -14,7 +13,6 @@ local RunService = game:GetService("RunService")
 local StarterGui = game:GetService("StarterGui")
 local LocalPlayer = Players.LocalPlayer
 
--- ============ ЦВЕТА ============
 local THEME = {
     Background   = Color3.fromRGB(139, 0, 30),
     Sidebar      = Color3.fromRGB(115, 0, 25),
@@ -24,7 +22,6 @@ local THEME = {
     TextDim      = Color3.fromRGB(230, 180, 190)
 }
 
--- ============ GUI ============
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "BonnyHub"
 ScreenGui.ResetOnSpawn = false
@@ -42,7 +39,6 @@ else
     end
 end
 
--- ============ ОСНОВНОЙ ФРЕЙМ ============
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 480, 0, 280)
@@ -57,7 +53,6 @@ local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 10)
 MainCorner.Parent = MainFrame
 
--- ============ ЗАГОЛОВОК ============
 local TitleBar = Instance.new("Frame")
 TitleBar.Size = UDim2.new(1, 0, 0, 32)
 TitleBar.BackgroundColor3 = THEME.Sidebar
@@ -89,7 +84,6 @@ Title.TextSize = 13
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TitleBar
 
--- ============ КНОПКИ УПРАВЛЕНИЯ (только − и ×) ============
 local function CreateTitleBtn(symbol, xOffset, callback)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(0, 22, 0, 22)
@@ -106,7 +100,6 @@ local function CreateTitleBtn(symbol, xOffset, callback)
     return Btn
 end
 
--- Свернуть (−)
 CreateTitleBtn("−", -55, function()
     MainFrame.Visible = false
     local OpenBtn = Instance.new("TextButton")
@@ -127,13 +120,11 @@ CreateTitleBtn("−", -55, function()
     end)
 end)
 
--- Закрыть (×)
 CreateTitleBtn("×", -28, function()
     ScreenGui:Destroy()
     _G.BonnyHubLoaded = false
 end)
 
--- ============ САЙДБАР ============
 local Sidebar = Instance.new("Frame")
 Sidebar.Size = UDim2.new(0, 140, 1, -42)
 Sidebar.Position = UDim2.new(0, 8, 0, 38)
@@ -156,7 +147,6 @@ SidebarPad.PaddingLeft = UDim.new(0, 6)
 SidebarPad.PaddingRight = UDim.new(0, 6)
 SidebarPad.Parent = Sidebar
 
--- ============ КОНТЕНТ ============
 local Content = Instance.new("Frame")
 Content.Size = UDim2.new(1, -160, 1, -50)
 Content.Position = UDim2.new(0, 152, 0, 44)
@@ -168,7 +158,6 @@ local ContentCorner = Instance.new("UICorner")
 ContentCorner.CornerRadius = UDim.new(0, 8)
 ContentCorner.Parent = Content
 
--- ============ ВКЛАДКИ ============
 local Tabs = {}
 local TabButtons = {}
 
@@ -233,7 +222,6 @@ local function CreateTab(name, icon)
     return TabContent
 end
 
--- ============ ЭЛЕМЕНТЫ ============
 local function CreateSection(parent, text)
     local Sec = Instance.new("TextLabel")
     Sec.Size = UDim2.new(1, 0, 0, 22)
@@ -300,35 +288,24 @@ local function CreateToggle(parent, text, default, callback)
     return Frame
 end
 
--- ============ СОЗДАНИЕ ВКЛАДОК ============
 local MainTab   = CreateTab("Main", "★")
 local VisualTab = CreateTab("Visual", "👁")
 local TrollTab  = CreateTab("Troll", "☠")
 
--- ============ ФУНКЦИИ ДЛЯ ЧАСТИ 2 ============
--- Экспортируем всё нужное, чтобы использовать во второй части
 _G.BonnyHub = {
-    ScreenGui  = ScreenGui,
-    MainFrame  = MainFrame,
-    MainTab    = MainTab,
-    VisualTab  = VisualTab,
-    TrollTab   = TrollTab,
+    ScreenGui = ScreenGui, MainFrame = MainFrame,
+    MainTab = MainTab, VisualTab = VisualTab, TrollTab = TrollTab,
     TabButtons = TabButtons,
-    CreateSection = CreateSection,
-    CreateButton  = CreateButton,
-    CreateToggle  = CreateToggle,
-    THEME = THEME,
-    LocalPlayer = LocalPlayer,
-    Players = Players,
-    RunService = RunService,
-    StarterGui = StarterGui
+    CreateSection = CreateSection, CreateButton = CreateButton, CreateToggle = CreateToggle,
+    THEME = THEME, LocalPlayer = LocalPlayer, Players = Players,
+    RunService = RunService, StarterGui = StarterGui
 }
 
 print("[Bonny Hub] Часть 1 загружена (GUI готов)")
 --[[
     Bonny Hub | MM2 Script
     ЧАСТЬ 2: Функции (Main, Visual, Troll)
-    Вставь ПОСЛЕ части 1
+    ESP: Highlight-аура как на картинке, видно через стены
 --]]
 
 local H = _G.BonnyHub
@@ -405,7 +382,6 @@ CreateToggle(MainTab, "💀 Auto Kill", false, function(state) _G.BonnyAutoKill 
 -- ============ ОПРЕДЕЛЕНИЕ РОЛИ ============
 local function GetRole(plr)
     if plr == LocalPlayer then return "LocalPlayer" end
-
     local char = plr.Character
     if not char then return "Innocent" end
 
@@ -434,104 +410,108 @@ local function GetRole(plr)
     end
 
     local backpack = plr:FindFirstChildOfClass("Backpack")
-    if hasGun(char) or (backpack and hasGun(backpack)) then
-        return "Sheriff"
-    end
-    if hasKnife(char) or (backpack and hasKnife(backpack)) then
-        return "Murderer"
-    end
-
+    if hasGun(char) or (backpack and hasGun(backpack)) then return "Sheriff" end
+    if hasKnife(char) or (backpack and hasKnife(backpack)) then return "Murderer" end
     return "Innocent"
 end
 
 local function GetRoleColor(role)
     if role == "Murderer" then
-        return Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 120, 120)
+        return Color3.fromRGB(255, 30, 30)
     elseif role == "Sheriff" then
-        return Color3.fromRGB(0, 120, 255), Color3.fromRGB(130, 200, 255)
+        return Color3.fromRGB(30, 130, 255)
     elseif role == "Innocent" then
-        return Color3.fromRGB(0, 220, 80), Color3.fromRGB(150, 255, 180)
+        return Color3.fromRGB(0, 220, 80)
     end
-    return Color3.fromRGB(255, 255, 255), Color3.fromRGB(255, 255, 255)
+    return Color3.fromRGB(255, 255, 255)
+end
+
+-- ============ НОВАЯ ФУНКЦИЯ: СООБЩЕНИЕ В ЧАТ ============
+local function GetRoleShort(role)
+    if role == "Murderer" then return "murder"
+    elseif role == "Sheriff" then return "sheriff"
+    elseif role == "Innocent" then return "inno"
+    end
+    return "?"
+end
+
+local function SendChatMessage(msg)
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local ok = pcall(function()
+        ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+    end)
+    if not ok then
+        -- fallback для нового чата
+        pcall(function()
+            game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(msg)
+        end)
+    end
 end
 
 -- ============ ВКЛАДКА VISUAL ============
 CreateSection(VisualTab, "Visual Features")
 
+-- ESP как на картинке: Highlight вокруг всего персонажа
 local espEnabled = false
-local espObjects = {}
+local espObjects = {} -- [plr] = {highlight, tag}
 
-CreateToggle(VisualTab, "👁️ ESP Players (Aura)", false, function(state)
+CreateToggle(VisualTab, "👁️ ESP Players (Outline)", false, function(state)
     espEnabled = state
     if not state then
         for _, data in pairs(espObjects) do
-            if data.outer and data.outer.Parent then data.outer:Destroy() end
-            if data.inner and data.inner.Parent then data.inner:Destroy() end
+            if data.highlight and data.highlight.Parent then data.highlight:Destroy() end
             if data.tag and data.tag.Parent then data.tag:Destroy() end
         end
         espObjects = {}
     end
 end)
 
-local function createAura(plr)
+local function createESP(plr)
     if plr == LocalPlayer then return end
     if not plr.Character then return end
-    local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
     local head = plr.Character:FindFirstChild("Head")
-    if not hrp then return end
+    if not head then return end
 
     local role = GetRole(plr)
-    local mainColor, lightColor = GetRoleColor(role)
+    local color = GetRoleColor(role)
 
-    local outer = Instance.new("SphereHandleAdornment")
-    outer.Name = "BonnyAuraOuter"
-    outer.Adornee = hrp
-    outer.AlwaysOnTop = false
-    outer.Radius = 4
-    outer.Color3 = mainColor
-    outer.Transparency = 0.75
-    outer.ZIndex = 1
-    outer.Parent = hrp
+    -- Highlight — обводка вокруг всей модели, видна через стены
+    local hl = Instance.new("Highlight")
+    hl.Name = "BonnyESP"
+    hl.Adornee = plr.Character
+    hl.FillTransparency = 1          -- не заливать тело
+    hl.OutlineTransparency = 0       -- контур непрозрачный
+    hl.OutlineColor = color
+    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop  -- видно через стены!
+    hl.Parent = plr.Character
 
-    local inner = Instance.new("SphereHandleAdornment")
-    inner.Name = "BonnyAuraInner"
-    inner.Adornee = hrp
-    inner.AlwaysOnTop = false
-    inner.Radius = 3
-    inner.Color3 = lightColor
-    inner.Transparency = 0.85
-    inner.ZIndex = 2
-    inner.Parent = hrp
+    -- Ник над головой
+    local tag = Instance.new("BillboardGui")
+    tag.Name = "BonnyTag"
+    tag.Adornee = head
+    tag.Size = UDim2.new(0, 220, 0, 30)
+    tag.StudsOffset = Vector3.new(0, 2.8, 0)
+    tag.AlwaysOnTop = true
+    tag.Parent = head
 
-    local tag
-    if head then
-        tag = Instance.new("BillboardGui")
-        tag.Name = "BonnyTag"
-        tag.Adornee = head
-        tag.Size = UDim2.new(0, 200, 0, 30)
-        tag.StudsOffset = Vector3.new(0, 2.5, 0)
-        tag.AlwaysOnTop = true
-        tag.Parent = head
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(1, 0, 1, 0)
+    lbl.BackgroundTransparency = 1
+    lbl.Text = plr.Name .. " [" .. role .. "]"
+    lbl.TextColor3 = color
+    lbl.TextStrokeTransparency = 0
+    lbl.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    lbl.Font = Enum.Font.GothamBold
+    lbl.TextSize = 13
+    lbl.Parent = tag
 
-        local lbl = Instance.new("TextLabel")
-        lbl.Size = UDim2.new(1, 0, 1, 0)
-        lbl.BackgroundTransparency = 1
-        lbl.Text = plr.Name .. " [" .. role .. "]"
-        lbl.TextColor3 = mainColor
-        lbl.TextStrokeTransparency = 0
-        lbl.Font = Enum.Font.GothamBold
-        lbl.TextSize = 13
-        lbl.Parent = tag
-    end
-
-    espObjects[plr] = {outer = outer, inner = inner, tag = tag, hrp = hrp}
+    espObjects[plr] = {highlight = hl, tag = tag}
 end
 
-local function removeAura(plr)
+local function removeESP(plr)
     local data = espObjects[plr]
     if not data then return end
-    if data.outer and data.outer.Parent then data.outer:Destroy() end
-    if data.inner and data.inner.Parent then data.inner:Destroy() end
+    if data.highlight and data.highlight.Parent then data.highlight:Destroy() end
     if data.tag and data.tag.Parent then data.tag:Destroy() end
     espObjects[plr] = nil
 end
@@ -541,39 +521,37 @@ RunService.RenderStepped:Connect(function()
 
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer then
-            if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            if plr.Character and plr.Character:FindFirstChild("Head") then
                 local data = espObjects[plr]
-                if not data or not data.outer or not data.outer.Parent
-                   or data.hrp ~= plr.Character.HumanoidRootPart then
-                    removeAura(plr)
-                    createAura(plr)
+                if not data or not data.highlight or not data.highlight.Parent
+                   or data.highlight.Adornee ~= plr.Character then
+                    removeESP(plr)
+                    createESP(plr)
                 else
+                    -- обновить цвет если роль изменилась
                     local role = GetRole(plr)
-                    local mainColor, lightColor = GetRoleColor(role)
-                    if data.outer.Color3 ~= mainColor then
-                        data.outer.Color3 = mainColor
-                        data.inner.Color3 = lightColor
-                        if data.tag then
-                            local lbl = data.tag:FindFirstChildOfClass("TextLabel")
-                            if lbl then
-                                lbl.Text = plr.Name .. " [" .. role .. "]"
-                                lbl.TextColor3 = mainColor
-                            end
+                    local color = GetRoleColor(role)
+                    if data.highlight.OutlineColor ~= color then
+                        data.highlight.OutlineColor = color
+                        local lbl = data.tag and data.tag:FindFirstChildOfClass("TextLabel")
+                        if lbl then
+                            lbl.Text = plr.Name .. " [" .. role .. "]"
+                            lbl.TextColor3 = color
                         end
                     end
                 end
             else
-                removeAura(plr)
+                removeESP(plr)
             end
         end
     end
 
     for plr, _ in pairs(espObjects) do
-        if not plr.Parent then removeAura(plr) end
+        if not plr.Parent then removeESP(plr) end
     end
 end)
 
-Players.PlayerRemoving:Connect(removeAura)
+Players.PlayerRemoving:Connect(removeESP)
 
 CreateToggle(VisualTab, "💡 Fullbright", false, function(state)
     local l = game:GetService("Lighting")
@@ -592,6 +570,21 @@ end)
 
 CreateToggle(VisualTab, "🌫️ Remove Fog", false, function(state)
     game:GetService("Lighting").FogEnd = state and 100000 or 1000
+end)
+
+-- ============ КНОПКА В ЧАТ (новая функция) ============
+CreateSection(VisualTab, "Chat Info")
+
+CreateButton(VisualTab, "💬 Показать роли в чат", function()
+    local msg = ""
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character then
+            local role = GetRole(plr)
+            msg = msg .. plr.Name .. "(" .. GetRoleShort(role) .. ") "
+        end
+    end
+    msg = msg .. "| Bonny hub"
+    SendChatMessage(msg)
 end)
 
 -- ============ ВКЛАДКА TROLL ============
@@ -639,7 +632,7 @@ end)
 
 CreateButton(TrollTab, "💬 Chat Spam", function()
     for i = 1, 10 do
-        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Bonny Hub ON TOP 🔥", "All")
+        SendChatMessage("Bonny Hub ON TOP 🔥")
         wait(0.5)
     end
 end)
