@@ -1,7 +1,7 @@
 --[[
     Bonny Hub | MM2 Script
-    Стиль: как Ringta Scripts (тёмно-красный, компактный)
-    Вкладки: Main, Visual, Troll
+    ЧАСТЬ 1: GUI, дизайн, вкладки, элементы
+    Вставь ЧАСТЬ 2 после этого кода
 --]]
 
 if _G.BonnyHubLoaded then
@@ -14,15 +14,14 @@ local RunService = game:GetService("RunService")
 local StarterGui = game:GetService("StarterGui")
 local LocalPlayer = Players.LocalPlayer
 
--- ============ ЦВЕТА (как на скрине) ============
+-- ============ ЦВЕТА ============
 local THEME = {
-    Background = Color3.fromRGB(139, 0, 30),
-    Sidebar    = Color3.fromRGB(115, 0, 25),
-    Element    = Color3.fromRGB(160, 20, 50),
+    Background   = Color3.fromRGB(139, 0, 30),
+    Sidebar      = Color3.fromRGB(115, 0, 25),
+    Element      = Color3.fromRGB(160, 20, 50),
     ElementHover = Color3.fromRGB(180, 30, 60),
-    Text       = Color3.fromRGB(255, 255, 255),
-    TextDim    = Color3.fromRGB(230, 180, 190),
-    Accent     = Color3.fromRGB(255, 255, 255)
+    Text         = Color3.fromRGB(255, 255, 255),
+    TextDim      = Color3.fromRGB(230, 180, 190)
 }
 
 -- ============ GUI ============
@@ -69,20 +68,19 @@ local TitleCorner = Instance.new("UICorner")
 TitleCorner.CornerRadius = UDim.new(0, 10)
 TitleCorner.Parent = TitleBar
 
--- Логотип
 local Logo = Instance.new("TextLabel")
-Logo.Size = UDim2.new(0, 30, 1, 0)
-Logo.Position = UDim2.new(0, 8, 0, 0)
+Logo.Size = UDim2.new(0, 25, 1, 0)
+Logo.Position = UDim2.new(0, 10, 0, 0)
 Logo.BackgroundTransparency = 1
 Logo.Text = "★"
 Logo.TextColor3 = THEME.Text
 Logo.Font = Enum.Font.GothamBold
-Logo.TextSize = 18
+Logo.TextSize = 16
 Logo.Parent = TitleBar
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -160, 1, 0)
-Title.Position = UDim2.new(0, 35, 0, 0)
+Title.Size = UDim2.new(1, -120, 1, 0)
+Title.Position = UDim2.new(0, 32, 0, 0)
 Title.BackgroundTransparency = 1
 Title.Text = "BONNY HUB"
 Title.TextColor3 = THEME.Text
@@ -91,18 +89,7 @@ Title.TextSize = 13
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TitleBar
 
-local SubTitle = Instance.new("TextLabel")
-SubTitle.Size = UDim2.new(1, -160, 1, 0)
-SubTitle.Position = UDim2.new(0, 35, 0, 0)
-SubTitle.BackgroundTransparency = 1
-SubTitle.Text = "BONNY"
-SubTitle.TextColor3 = THEME.TextDim
-SubTitle.Font = Enum.Font.Gotham
-SubTitle.TextSize = 9
-SubTitle.TextXAlignment = Enum.TextXAlignment.Left
-SubTitle.Parent = TitleBar
-
--- ============ КНОПКИ УПРАВЛЕНИЯ (как на скрине: ⛶ − ✕) ============
+-- ============ КНОПКИ УПРАВЛЕНИЯ (только − и ×) ============
 local function CreateTitleBtn(symbol, xOffset, callback)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(0, 22, 0, 22)
@@ -111,31 +98,16 @@ local function CreateTitleBtn(symbol, xOffset, callback)
     Btn.Text = symbol
     Btn.TextColor3 = THEME.Text
     Btn.Font = Enum.Font.GothamBold
-    Btn.TextSize = 15
+    Btn.TextSize = 16
     Btn.Parent = TitleBar
     Btn.MouseButton1Click:Connect(callback)
-    Btn.MouseEnter:Connect(function()
-        Btn.TextColor3 = Color3.fromRGB(255, 200, 200)
-    end)
-    Btn.MouseLeave:Connect(function()
-        Btn.TextColor3 = THEME.Text
-    end)
+    Btn.MouseEnter:Connect(function() Btn.TextColor3 = Color3.fromRGB(255, 200, 200) end)
+    Btn.MouseLeave:Connect(function() Btn.TextColor3 = THEME.Text end)
     return Btn
 end
 
--- Кнопка разворота (⛶)
-CreateTitleBtn("⛶", -90, function()
-    if MainFrame.Size == UDim2.new(0, 480, 0, 280) then
-        MainFrame.Size = UDim2.new(0, 700, 0, 450)
-        MainFrame.Position = UDim2.new(0.5, -350, 0.5, -225)
-    else
-        MainFrame.Size = UDim2.new(0, 480, 0, 280)
-        MainFrame.Position = UDim2.new(0.5, -240, 0.5, -140)
-    end
-end)
-
--- Кнопка свернуть (−)
-CreateTitleBtn("−", -60, function()
+-- Свернуть (−)
+CreateTitleBtn("−", -55, function()
     MainFrame.Visible = false
     local OpenBtn = Instance.new("TextButton")
     OpenBtn.Name = "OpenBtn"
@@ -155,8 +127,8 @@ CreateTitleBtn("−", -60, function()
     end)
 end)
 
--- Кнопка закрыть (✕)
-CreateTitleBtn("✕", -30, function()
+-- Закрыть (×)
+CreateTitleBtn("×", -28, function()
     ScreenGui:Destroy()
     _G.BonnyHubLoaded = false
 end)
@@ -328,8 +300,56 @@ local function CreateToggle(parent, text, default, callback)
     return Frame
 end
 
+-- ============ СОЗДАНИЕ ВКЛАДОК ============
+local MainTab   = CreateTab("Main", "★")
+local VisualTab = CreateTab("Visual", "👁")
+local TrollTab  = CreateTab("Troll", "☠")
+
+-- ============ ФУНКЦИИ ДЛЯ ЧАСТИ 2 ============
+-- Экспортируем всё нужное, чтобы использовать во второй части
+_G.BonnyHub = {
+    ScreenGui  = ScreenGui,
+    MainFrame  = MainFrame,
+    MainTab    = MainTab,
+    VisualTab  = VisualTab,
+    TrollTab   = TrollTab,
+    TabButtons = TabButtons,
+    CreateSection = CreateSection,
+    CreateButton  = CreateButton,
+    CreateToggle  = CreateToggle,
+    THEME = THEME,
+    LocalPlayer = LocalPlayer,
+    Players = Players,
+    RunService = RunService,
+    StarterGui = StarterGui
+}
+
+print("[Bonny Hub] Часть 1 загружена (GUI готов)")
+--[[
+    Bonny Hub | MM2 Script
+    ЧАСТЬ 2: Функции (Main, Visual, Troll)
+    Вставь ПОСЛЕ части 1
+--]]
+
+local H = _G.BonnyHub
+if not H then
+    warn("[Bonny Hub] Сначала запусти ЧАСТЬ 1!")
+    return
+end
+
+local LocalPlayer = H.LocalPlayer
+local Players = H.Players
+local RunService = H.RunService
+local StarterGui = H.StarterGui
+local MainTab = H.MainTab
+local VisualTab = H.VisualTab
+local TrollTab = H.TrollTab
+local CreateSection = H.CreateSection
+local CreateButton = H.CreateButton
+local CreateToggle = H.CreateToggle
+local TabButtons = H.TabButtons
+
 -- ============ ВКЛАДКА MAIN ============
-local MainTab = CreateTab("Main", "★")
 CreateSection(MainTab, "Main Features")
 
 CreateButton(MainTab, "🗡️ Auto Pickup Knife", function()
@@ -382,72 +402,178 @@ end)
 
 CreateToggle(MainTab, "💀 Auto Kill", false, function(state) _G.BonnyAutoKill = state end)
 
+-- ============ ОПРЕДЕЛЕНИЕ РОЛИ ============
+local function GetRole(plr)
+    if plr == LocalPlayer then return "LocalPlayer" end
+
+    local char = plr.Character
+    if not char then return "Innocent" end
+
+    local function hasKnife(container)
+        for _, item in pairs(container:GetChildren()) do
+            if item:IsA("Tool") then
+                local n = item.Name:lower()
+                if n:find("knife") or n:find("sword") or n:find("m9") or n:find("dagger") then
+                    return true
+                end
+            end
+        end
+        return false
+    end
+
+    local function hasGun(container)
+        for _, item in pairs(container:GetChildren()) do
+            if item:IsA("Tool") then
+                local n = item.Name:lower()
+                if n:find("gun") or n:find("revolver") or n:find("pistol") then
+                    return true
+                end
+            end
+        end
+        return false
+    end
+
+    local backpack = plr:FindFirstChildOfClass("Backpack")
+    if hasGun(char) or (backpack and hasGun(backpack)) then
+        return "Sheriff"
+    end
+    if hasKnife(char) or (backpack and hasKnife(backpack)) then
+        return "Murderer"
+    end
+
+    return "Innocent"
+end
+
+local function GetRoleColor(role)
+    if role == "Murderer" then
+        return Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 120, 120)
+    elseif role == "Sheriff" then
+        return Color3.fromRGB(0, 120, 255), Color3.fromRGB(130, 200, 255)
+    elseif role == "Innocent" then
+        return Color3.fromRGB(0, 220, 80), Color3.fromRGB(150, 255, 180)
+    end
+    return Color3.fromRGB(255, 255, 255), Color3.fromRGB(255, 255, 255)
+end
+
 -- ============ ВКЛАДКА VISUAL ============
-local VisualTab = CreateTab("Visual", "👁")
 CreateSection(VisualTab, "Visual Features")
 
 local espEnabled = false
 local espObjects = {}
 
-CreateToggle(VisualTab, "👁️ ESP Players", false, function(state)
+CreateToggle(VisualTab, "👁️ ESP Players (Aura)", false, function(state)
     espEnabled = state
     if not state then
-        for _, obj in pairs(espObjects) do
-            if obj and obj.Parent then obj:Destroy() end
+        for _, data in pairs(espObjects) do
+            if data.outer and data.outer.Parent then data.outer:Destroy() end
+            if data.inner and data.inner.Parent then data.inner:Destroy() end
+            if data.tag and data.tag.Parent then data.tag:Destroy() end
         end
         espObjects = {}
     end
 end)
 
-local function createESP(plr)
+local function createAura(plr)
     if plr == LocalPlayer then return end
-    if not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then return end
-    local box = Instance.new("BoxHandleAdornment")
-    box.Name = "BonnyESP"
-    box.Adornee = plr.Character.HumanoidRootPart
-    box.AlwaysOnTop = true
-    box.Size = Vector3.new(2, 2, 1)
-    box.Color3 = Color3.fromRGB(255, 255, 255)
-    box.Transparency = 0.5
-    box.ZIndex = 5
-    box.Parent = plr.Character.HumanoidRootPart
-    table.insert(espObjects, box)
+    if not plr.Character then return end
+    local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
+    local head = plr.Character:FindFirstChild("Head")
+    if not hrp then return end
 
-    local tag = Instance.new("BillboardGui")
-    tag.Name = "BonnyTag"
-    tag.Adornee = plr.Character.Head
-    tag.Size = UDim2.new(0, 200, 0, 50)
-    tag.StudsOffset = Vector3.new(0, 2, 0)
-    tag.AlwaysOnTop = true
-    tag.Parent = plr.Character.Head
+    local role = GetRole(plr)
+    local mainColor, lightColor = GetRoleColor(role)
 
-    local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(1, 0, 1, 0)
-    lbl.BackgroundTransparency = 1
-    lbl.Text = plr.Name
-    lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-    lbl.TextStrokeTransparency = 0
-    lbl.Font = Enum.Font.GothamBold
-    lbl.TextSize = 13
-    lbl.Parent = tag
-    table.insert(espObjects, tag)
+    local outer = Instance.new("SphereHandleAdornment")
+    outer.Name = "BonnyAuraOuter"
+    outer.Adornee = hrp
+    outer.AlwaysOnTop = false
+    outer.Radius = 4
+    outer.Color3 = mainColor
+    outer.Transparency = 0.75
+    outer.ZIndex = 1
+    outer.Parent = hrp
+
+    local inner = Instance.new("SphereHandleAdornment")
+    inner.Name = "BonnyAuraInner"
+    inner.Adornee = hrp
+    inner.AlwaysOnTop = false
+    inner.Radius = 3
+    inner.Color3 = lightColor
+    inner.Transparency = 0.85
+    inner.ZIndex = 2
+    inner.Parent = hrp
+
+    local tag
+    if head then
+        tag = Instance.new("BillboardGui")
+        tag.Name = "BonnyTag"
+        tag.Adornee = head
+        tag.Size = UDim2.new(0, 200, 0, 30)
+        tag.StudsOffset = Vector3.new(0, 2.5, 0)
+        tag.AlwaysOnTop = true
+        tag.Parent = head
+
+        local lbl = Instance.new("TextLabel")
+        lbl.Size = UDim2.new(1, 0, 1, 0)
+        lbl.BackgroundTransparency = 1
+        lbl.Text = plr.Name .. " [" .. role .. "]"
+        lbl.TextColor3 = mainColor
+        lbl.TextStrokeTransparency = 0
+        lbl.Font = Enum.Font.GothamBold
+        lbl.TextSize = 13
+        lbl.Parent = tag
+    end
+
+    espObjects[plr] = {outer = outer, inner = inner, tag = tag, hrp = hrp}
+end
+
+local function removeAura(plr)
+    local data = espObjects[plr]
+    if not data then return end
+    if data.outer and data.outer.Parent then data.outer:Destroy() end
+    if data.inner and data.inner.Parent then data.inner:Destroy() end
+    if data.tag and data.tag.Parent then data.tag:Destroy() end
+    espObjects[plr] = nil
 end
 
 RunService.RenderStepped:Connect(function()
-    if espEnabled then
-        for _, plr in pairs(Players:GetPlayers()) do
-            if plr ~= LocalPlayer and plr.Character then
-                local has = false
-                for _, obj in pairs(espObjects) do
-                    if obj.Parent == plr.Character or obj.Parent == plr.Character:FindFirstChild("HumanoidRootPart") then
-                        has = true; break
+    if not espEnabled then return end
+
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer then
+            if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                local data = espObjects[plr]
+                if not data or not data.outer or not data.outer.Parent
+                   or data.hrp ~= plr.Character.HumanoidRootPart then
+                    removeAura(plr)
+                    createAura(plr)
+                else
+                    local role = GetRole(plr)
+                    local mainColor, lightColor = GetRoleColor(role)
+                    if data.outer.Color3 ~= mainColor then
+                        data.outer.Color3 = mainColor
+                        data.inner.Color3 = lightColor
+                        if data.tag then
+                            local lbl = data.tag:FindFirstChildOfClass("TextLabel")
+                            if lbl then
+                                lbl.Text = plr.Name .. " [" .. role .. "]"
+                                lbl.TextColor3 = mainColor
+                            end
+                        end
                     end
                 end
-                if not has then createESP(plr) end
+            else
+                removeAura(plr)
             end
         end
     end
+
+    for plr, _ in pairs(espObjects) do
+        if not plr.Parent then removeAura(plr) end
+    end
 end)
+
+Players.PlayerRemoving:Connect(removeAura)
 
 CreateToggle(VisualTab, "💡 Fullbright", false, function(state)
     local l = game:GetService("Lighting")
@@ -469,24 +595,12 @@ CreateToggle(VisualTab, "🌫️ Remove Fog", false, function(state)
 end)
 
 -- ============ ВКЛАДКА TROLL ============
-local TrollTab = CreateTab("Troll", "☠")
 CreateSection(TrollTab, "Troll Features")
 
 CreateButton(TrollTab, "🤸 Flip Character", function()
     local char = LocalPlayer.Character
     if char and char:FindFirstChild("HumanoidRootPart") then
         char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.Angles(math.rad(180), 0, 0)
-    end
-end)
-
-local spamJump = false
-CreateToggle(TrollTab, "🦘 Spam Jump", false, function(state) spamJump = state end)
-RunService.Heartbeat:Connect(function()
-    if spamJump then
-        local char = LocalPlayer.Character
-        if char and char:FindFirstChildOfClass("Humanoid") then
-            char.Humanoid.Jump = true
-        end
     end
 end)
 
@@ -541,7 +655,7 @@ CreateButton(TrollTab, "💥 Visual Explosion", function()
     end
 end)
 
--- ============ СТАРТ ============
+-- ============ АКТИВАЦИЯ ПЕРВОЙ ВКЛАДКИ ============
 for _, btn in pairs(TabButtons) do
     btn.MouseButton1Click:Fire()
     break
@@ -553,4 +667,4 @@ StarterGui:SetCore("SendNotification", {
     Duration = 3
 })
 
-print("[Bonny Hub] Loaded!")
+print("[Bonny Hub] Часть 2 загружена (функции готовы)")
