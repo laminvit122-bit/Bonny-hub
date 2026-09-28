@@ -1,6 +1,6 @@
 --[[
-    ✨ BONNY HUB ✨ | MM2 Premium Script
-    ЧАСТЬ 1: Красивый GUI
+    BONNY HUB | MM2 Premium Script
+    PART 1: GUI + Tabs + Elements
 --]]
 
 if _G.BonnyHubLoaded then
@@ -14,23 +14,19 @@ local StarterGui = game:GetService("StarterGui")
 local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 
--- ============ ЦВЕТА ============
 local THEME = {
     Background    = Color3.fromRGB(18, 10, 15),
     Background2   = Color3.fromRGB(35, 12, 22),
     Sidebar       = Color3.fromRGB(28, 12, 20),
-    SidebarGlow   = Color3.fromRGB(255, 30, 80),
     Element       = Color3.fromRGB(45, 20, 32),
     ElementHover  = Color3.fromRGB(65, 28, 45),
     Accent        = Color3.fromRGB(255, 30, 80),
-    Accent2       = Color3.fromRGB(255, 100, 150),
     Gold          = Color3.fromRGB(255, 200, 60),
     Text          = Color3.fromRGB(255, 255, 255),
     TextDim       = Color3.fromRGB(200, 160, 180),
     Success       = Color3.fromRGB(0, 220, 130)
 }
 
--- ============ GUI ============
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "BonnyHub"
 ScreenGui.ResetOnSpawn = false
@@ -49,11 +45,10 @@ else
     end
 end
 
--- ============ ГЛАВНЫЙ ФРЕЙМ ============
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 520, 0, 320)
-MainFrame.Position = UDim2.new(0.5, -260, 0.5, -160)
+MainFrame.Size = UDim2.new(0, 520, 0, 360)
+MainFrame.Position = UDim2.new(0.5, -260, 0.5, -180)
 MainFrame.BackgroundColor3 = THEME.Background
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -64,7 +59,6 @@ local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 14)
 MainCorner.Parent = MainFrame
 
--- Градиентный фон
 local BG = Instance.new("UIGradient")
 BG.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, THEME.Background2),
@@ -74,14 +68,12 @@ BG.Color = ColorSequence.new({
 BG.Rotation = 45
 BG.Parent = MainFrame
 
--- Свечение вокруг
 local GlowStroke = Instance.new("UIStroke")
 GlowStroke.Color = THEME.Accent
 GlowStroke.Thickness = 1.5
 GlowStroke.Transparency = 0.3
 GlowStroke.Parent = MainFrame
 
--- ============ ЗАГОЛОВОК ============
 local TitleBar = Instance.new("Frame")
 TitleBar.Size = UDim2.new(1, 0, 0, 42)
 TitleBar.BackgroundColor3 = THEME.Sidebar
@@ -93,7 +85,6 @@ local TitleCorner = Instance.new("UICorner")
 TitleCorner.CornerRadius = UDim.new(0, 14)
 TitleCorner.Parent = TitleBar
 
--- Нижняя часть заголовка прямоугольная (чтобы скругления не отображались снизу)
 local TBottom = Instance.new("Frame")
 TBottom.Size = UDim2.new(1, 0, 0, 14)
 TBottom.Position = UDim2.new(0, 0, 1, -14)
@@ -102,7 +93,6 @@ TBottom.BackgroundTransparency = 0.3
 TBottom.BorderSizePixel = 0
 TBottom.Parent = TitleBar
 
--- Логотип с эффектом
 local LogoFrame = Instance.new("Frame")
 LogoFrame.Size = UDim2.new(0, 30, 0, 30)
 LogoFrame.Position = UDim2.new(0, 12, 0.5, -15)
@@ -131,7 +121,6 @@ Logo.Font = Enum.Font.GothamBold
 Logo.TextSize = 18
 Logo.Parent = LogoFrame
 
--- Название
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -200, 0, 22)
 Title.Position = UDim2.new(0, 52, 0, 4)
@@ -154,7 +143,6 @@ SubTitle.TextSize = 9
 SubTitle.TextXAlignment = Enum.TextXAlignment.Left
 SubTitle.Parent = TitleBar
 
--- ============ КНОПКИ УПРАВЛЕНИЯ ============
 local function CreateTitleBtn(symbol, xOffset, color, callback)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(0, 26, 0, 26)
@@ -168,15 +156,9 @@ local function CreateTitleBtn(symbol, xOffset, color, callback)
     Btn.BorderSizePixel = 0
     Btn.AutoButtonColor = false
     Btn.Parent = TitleBar
-
     local C = Instance.new("UICorner") C.CornerRadius = UDim.new(0, 7) C.Parent = Btn
-
-    Btn.MouseEnter:Connect(function()
-        TweenService:Create(Btn, TweenInfo.new(0.15), {BackgroundTransparency = 0}):Play()
-    end)
-    Btn.MouseLeave:Connect(function()
-        TweenService:Create(Btn, TweenInfo.new(0.15), {BackgroundTransparency = 0.3}):Play()
-    end)
+    Btn.MouseEnter:Connect(function() TweenService:Create(Btn, TweenInfo.new(0.15), {BackgroundTransparency = 0}):Play() end)
+    Btn.MouseLeave:Connect(function() TweenService:Create(Btn, TweenInfo.new(0.15), {BackgroundTransparency = 0.3}):Play() end)
     Btn.MouseButton1Click:Connect(callback)
     return Btn
 end
@@ -207,7 +189,6 @@ CreateTitleBtn("×", -40, Color3.fromRGB(255, 80, 80), function()
     _G.BonnyHubLoaded = false
 end)
 
--- ============ САЙДБАР ============
 local Sidebar = Instance.new("Frame")
 Sidebar.Size = UDim2.new(0, 150, 1, -54)
 Sidebar.Position = UDim2.new(0, 10, 0, 48)
@@ -226,7 +207,6 @@ SidebarStroke.Thickness = 1
 SidebarStroke.Transparency = 0.7
 SidebarStroke.Parent = Sidebar
 
--- Рамка "v2.0" вверху сайдбара
 local VersionLabel = Instance.new("TextLabel")
 VersionLabel.Size = UDim2.new(1, -20, 0, 24)
 VersionLabel.Position = UDim2.new(0, 10, 0, 8)
@@ -238,10 +218,8 @@ VersionLabel.Font = Enum.Font.GothamBold
 VersionLabel.TextSize = 11
 VersionLabel.BorderSizePixel = 0
 VersionLabel.Parent = Sidebar
-
 local VLC = Instance.new("UICorner") VLC.CornerRadius = UDim.new(0, 6) VLC.Parent = VersionLabel
 
--- Список вкладок
 local TabListFrame = Instance.new("Frame")
 TabListFrame.Size = UDim2.new(1, -20, 1, -44)
 TabListFrame.Position = UDim2.new(0, 10, 0, 36)
@@ -253,7 +231,6 @@ TabList.Padding = UDim.new(0, 5)
 TabList.SortOrder = Enum.SortOrder.LayoutOrder
 TabList.Parent = TabListFrame
 
--- ============ КОНТЕНТ ============
 local Content = Instance.new("Frame")
 Content.Size = UDim2.new(1, -180, 1, -60)
 Content.Position = UDim2.new(0, 170, 0, 48)
@@ -272,7 +249,6 @@ ContentStroke.Thickness = 1
 ContentStroke.Transparency = 0.7
 ContentStroke.Parent = Content
 
--- ============ ВКЛАДКИ ============
 local Tabs = {}
 local TabButtons = {}
 
@@ -294,7 +270,6 @@ local function CreateTab(name, icon)
     BtnCorner.CornerRadius = UDim.new(0, 8)
     BtnCorner.Parent = TabBtn
 
-    -- Полоска слева для активной вкладки
     local Stripe = Instance.new("Frame")
     Stripe.Name = "Stripe"
     Stripe.Size = UDim2.new(0, 3, 0.6, 0)
@@ -356,7 +331,6 @@ local function CreateTab(name, icon)
     return TabContent
 end
 
--- ============ ЭЛЕМЕНТЫ ============
 local function CreateSection(parent, text)
     local Wrap = Instance.new("Frame")
     Wrap.Size = UDim2.new(1, 0, 0, 26)
@@ -372,7 +346,8 @@ local function CreateSection(parent, text)
     Line.Parent = Wrap
 
     local Sec = Instance.new("TextLabel")
-    Sec.Size = UDim2.new(0, 180, 1, 0)
+    Sec.Name = "SectionLabel"
+    Sec.Size = UDim2.new(0, 220, 1, 0)
     Sec.Position = UDim2.new(0, 8, 0, 0)
     Sec.BackgroundColor3 = THEME.Sidebar
     Sec.BackgroundTransparency = 0.1
@@ -468,185 +443,221 @@ local function CreateToggle(parent, text, default, callback)
     return Frame
 end
 
--- ============ СОЗДАНИЕ ВКЛАДОК ============
-local MainTab   = CreateTab("Main", "🏠")
-local VisualTab = CreateTab("Visual", "👁")
-local TrollTab  = CreateTab("Troll", "☠")
+-- Tabs order: Main, Visual, Teleports, Troll, Settings (bottom)
+local MainTab      = CreateTab("Main", "🏠")
+local VisualTab    = CreateTab("Visual", "👁")
+local TeleportsTab = CreateTab("Teleports", "📍")
+local TrollTab     = CreateTab("Troll", "☠")
+local SettingsTab  = CreateTab("Settings", "⚙")
 
 _G.BonnyHub = {
     ScreenGui = ScreenGui, MainFrame = MainFrame,
-    MainTab = MainTab, VisualTab = VisualTab, TrollTab = TrollTab,
+    MainTab = MainTab, VisualTab = VisualTab, TeleportsTab = TeleportsTab,
+    TrollTab = TrollTab, SettingsTab = SettingsTab,
     TabButtons = TabButtons,
     CreateSection = CreateSection, CreateButton = CreateButton, CreateToggle = CreateToggle,
     THEME = THEME, LocalPlayer = LocalPlayer, Players = Players,
     RunService = RunService, StarterGui = StarterGui, TweenService = TweenService
 }
 
-print("[Bonny Hub] Часть 1 загружена (красивый GUI готов)")
+print("[Bonny Hub] Part 1 loaded (GUI ready)")
 --[[
-    ✨ BONNY HUB ✨ | MM2 Premium Script
-    ЧАСТЬ 2: Функции
-    ESP: обводка + заливка внутри (светлее)
-    Чат: только мардер и шериф
+    BONNY HUB | MM2 Premium Script
+    PART 2: Language system + Roles + Main + Visual
 --]]
 
 local H = _G.BonnyHub
-if not H then
-    warn("[Bonny Hub] Сначала запусти ЧАСТЬ 1!")
-    return
+if not H then warn("[Bonny Hub] Run PART 1 first!") return end
+
+local LocalPlayer   = H.LocalPlayer
+local Players       = H.Players
+local RunService    = H.RunService
+local StarterGui    = H.StarterGui
+local MainTab       = H.MainTab
+local VisualTab     = H.VisualTab
+local CreateSection = H.CreateSection
+local CreateButton  = H.CreateButton
+local CreateToggle  = H.CreateToggle
+
+-- ============ LANGUAGE SYSTEM ============
+local Lang = {
+    current = "en",
+    strings = {
+        en = {
+            chatInfo       = "Chat Info",
+            chatRoles      = "Show Murderer & Sheriff in Chat",
+            visualFeatures = "Visual Features",
+            esp            = "ESP Players",
+            fullbright     = "Fullbright",
+            removeFog      = "Remove Fog",
+            roundTimer     = "Round Timer",
+            teleports      = "Teleports",
+            tpMurderer     = "Teleport to Murderer",
+            tpSheriff      = "Teleport to Sheriff",
+            tpMap          = "Teleport to Map",
+            tpSpawn        = "Teleport to Spawn",
+            trollFeatures  = "Troll Features",
+            explosionSelf  = "Explosion Self",
+            touchFling     = "Touch Fling",
+            settings       = "Settings",
+            language       = "Language",
+            languageEn     = "English",
+            languageRu     = "Russian",
+            loaded         = "Loaded successfully!",
+            roundEnded     = "Round ended",
+            roundTime      = "Round time left",
+            noTarget       = "Target not found"
+        },
+        ru = {
+            chatInfo       = "Информация в чат",
+            chatRoles      = "Показать мардера и шерифа в чат",
+            visualFeatures = "Визуальные функции",
+            esp            = "ESP игроков",
+            fullbright     = "Полная яркость",
+            removeFog      = "Убрать туман",
+            roundTimer     = "Таймер раунда",
+            teleports      = "Телепорты",
+            tpMurderer     = "ТП к мардеру",
+            tpSheriff      = "ТП к шерифу",
+            tpMap          = "ТП на карту",
+            tpSpawn        = "ТП на спавн",
+            trollFeatures  = "Тролль функции",
+            explosionSelf  = "Взрыв себя",
+            touchFling     = "Тач-флинг",
+            settings       = "Настройки",
+            language       = "Язык",
+            languageEn     = "Английский",
+            languageRu     = "Русский",
+            loaded         = "Успешно загружено!",
+            roundEnded     = "Раунд закончен",
+            roundTime      = "Осталось времени",
+            noTarget       = "Цель не найдена"
+        }
+    }
+}
+
+local function L(key) return Lang.strings[Lang.current][key] or key end
+
+_G.BonnyHub.Lang = Lang
+_G.BonnyHub.L = L
+_G.BonnyHub.LangRefs = {}
+_G.BonnyHub.RegisterLang = function(ref, key, prefix)
+    table.insert(_G.BonnyHub.LangRefs, {ref = ref, key = key, prefix = prefix})
 end
 
-local LocalPlayer = H.LocalPlayer
-local Players = H.Players
-local RunService = H.RunService
-local StarterGui = H.StarterGui
-local MainTab = H.MainTab
-local VisualTab = H.VisualTab
-local TrollTab = H.TrollTab
-local CreateSection = H.CreateSection
-local CreateButton = H.CreateButton
-local CreateToggle = H.CreateToggle
-local TabButtons = H.TabButtons
-local THEME = H.THEME
+local RegisterLang = _G.BonnyHub.RegisterLang
+local LangRefs = _G.BonnyHub.LangRefs
 
--- ============ ОПРЕДЕЛЕНИЕ РОЛИ ============
+local function ApplyLang()
+    for _, entry in ipairs(LangRefs) do
+        pcall(function()
+            if entry.ref and entry.ref.Parent then
+                local pfx = entry.prefix or ""
+                if entry.ref.Name == "SectionLabel" then
+                    entry.ref.Text = "  ⚡  " .. L(entry.key)
+                else
+                    entry.ref.Text = "  " .. pfx .. L(entry.key)
+                end
+            end
+        end)
+    end
+end
+_G.BonnyHub.ApplyLang = ApplyLang
+
+-- ============ ROLE DETECTION ============
 local function GetRole(plr)
     if plr == LocalPlayer then return "LocalPlayer" end
     local char = plr.Character
     if not char then return "Innocent" end
 
-    local function hasKnife(container)
+    local function scan(container, patterns)
         for _, item in pairs(container:GetChildren()) do
             if item:IsA("Tool") then
                 local n = item.Name:lower()
-                if n:find("knife") or n:find("sword") or n:find("m9") or n:find("dagger") then
-                    return true
+                for _, p in ipairs(patterns) do
+                    if n:find(p) then return true end
                 end
             end
         end
         return false
     end
 
-    local function hasGun(container)
-        for _, item in pairs(container:GetChildren()) do
-            if item:IsA("Tool") then
-                local n = item.Name:lower()
-                if n:find("gun") or n:find("revolver") or n:find("pistol") then
-                    return true
-                end
-            end
-        end
-        return false
-    end
+    local knifePatterns = {"knife", "sword", "m9", "dagger", "blade"}
+    local gunPatterns   = {"gun", "revolver", "pistol", "firearm"}
 
     local backpack = plr:FindFirstChildOfClass("Backpack")
-    if hasGun(char) or (backpack and hasGun(backpack)) then return "Sheriff" end
-    if hasKnife(char) or (backpack and hasKnife(backpack)) then return "Murderer" end
+    local charBP   = char:FindFirstChildOfClass("Backpack")
+
+    if scan(char, gunPatterns) or (backpack and scan(backpack, gunPatterns)) or (charBP and scan(charBP, gunPatterns)) then
+        return "Sheriff"
+    end
+    if scan(char, knifePatterns) or (backpack and scan(backpack, knifePatterns)) or (charBP and scan(charBP, knifePatterns)) then
+        return "Murderer"
+    end
     return "Innocent"
 end
 
--- ============ ЦВЕТА ПО РОЛЯМ ============
--- Возвращает: outlineColor (тёмный/основной), fillColor (светлый)
 local function GetRoleColors(role)
     if role == "Murderer" then
-        return Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 130, 130)     -- 🔴 красный + светло-красный
+        return Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 130, 130)
     elseif role == "Sheriff" then
-        return Color3.fromRGB(0, 100, 255), Color3.fromRGB(120, 180, 255)   -- 🔵 синий + светло-синий
+        return Color3.fromRGB(0, 100, 255), Color3.fromRGB(120, 180, 255)
     elseif role == "Innocent" then
-        return Color3.fromRGB(0, 200, 50), Color3.fromRGB(130, 255, 160)    -- 🟢 зелёный + светло-зелёный
+        return Color3.fromRGB(0, 200, 50), Color3.fromRGB(130, 255, 160)
     end
     return Color3.fromRGB(255, 255, 255), Color3.fromRGB(255, 255, 255)
 end
 
--- ============ ОТПРАВКА В ЧАТ ============
-local function SendChatMessage(msg)
-    local ReplicatedStorage = game:GetService("ReplicatedStorage")
-    pcall(function()
-        ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+_G.BonnyHub.GetRole = GetRole
+_G.BonnyHub.GetRoleColors = GetRoleColors
+
+-- ============ CHAT ============
+local function SendChat(msg)
+    local RS = game:GetService("ReplicatedStorage")
+    local ok = pcall(function()
+        RS.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
     end)
+    if not ok then
+        pcall(function()
+            game:GetService("TextChatService").TextChannels.RBGeneral:SendAsync(msg)
+        end)
+    end
 end
+_G.BonnyHub.SendChat = SendChat
 
--- ============ ВКЛАДКА MAIN ============
-CreateSection(MainTab, "Main Features")
+-- ============ MAIN TAB ============
+local mainSec = CreateSection(MainTab, L("chatInfo"))
+local mainSecLabel = mainSec:FindFirstChild("SectionLabel")
+if mainSecLabel then RegisterLang(mainSecLabel, "chatInfo") end
 
-CreateButton(MainTab, "🗡️  Auto Pickup Knife", function()
-    for _, obj in pairs(workspace:GetChildren()) do
-        if obj:IsA("Tool") then
-            local char = LocalPlayer.Character
-            if char and char:FindFirstChildOfClass("Humanoid") then
-                obj.Parent = char
-                break
-            end
-        end
-    end
-end)
-
-CreateButton(MainTab, "🔫  Auto Pickup Gun", function()
-    for _, obj in pairs(workspace:GetChildren()) do
-        if obj:IsA("Tool") and (obj.Name:lower():find("gun") or obj.Name:lower():find("revolver")) then
-            local char = LocalPlayer.Character
-            if char and char:FindFirstChildOfClass("Humanoid") then
-                obj.Parent = char
-                break
-            end
-        end
-    end
-end)
-
-CreateButton(MainTab, "📍  Teleport to Nearest Weapon", function()
-    local char = LocalPlayer.Character
-    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-    local closest, dist = nil, math.huge
-    for _, obj in pairs(workspace:GetChildren()) do
-        if obj:IsA("Tool") and obj:FindFirstChild("Handle") then
-            local d = (char.HumanoidRootPart.Position - obj.Handle.Position).Magnitude
-            if d < dist then closest = obj; dist = d end
-        end
-    end
-    if closest and closest:FindFirstChild("Handle") then
-        char.HumanoidRootPart.CFrame = closest.Handle.CFrame + Vector3.new(0, 3, 0)
-        wait(0.1)
-        closest.Parent = char
-    end
-end)
-
-CreateButton(MainTab, "🏃  Teleport to Safe Place", function()
-    local char = LocalPlayer.Character
-    if char and char:FindFirstChild("HumanoidRootPart") then
-        char.HumanoidRootPart.CFrame = CFrame.new(0, 500, 0)
-    end
-end)
-
-CreateToggle(MainTab, "💀  Auto Kill", false, function(state) _G.BonnyAutoKill = state end)
-
--- ============ КНОПКА РОЛЕЙ В ЧАТ (только murder и sheriff) ============
-CreateSection(MainTab, "Chat Info")
-
-CreateButton(MainTab, "💬  Показать мардера и шерифа в чат", function()
-    local msg = ""
+local chatBtn = CreateButton(MainTab, "💬  " .. L("chatRoles"), function()
+    local murderers, sheriffs = {}, {}
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and plr.Character then
             local role = GetRole(plr)
-            if role == "Murderer" then
-                msg = msg .. plr.Name .. "(murder) "
-            elseif role == "Sheriff" then
-                msg = msg .. plr.Name .. "(sheriff) "
-            end
-            -- Невинных НЕ показываем!
+            if role == "Murderer" then table.insert(murderers, plr.Name .. "(murder)")
+            elseif role == "Sheriff" then table.insert(sheriffs, plr.Name .. "(sheriff)") end
         end
     end
-    if msg == "" then msg = "никого не найдено " end
-    msg = msg .. "| Bonny hub"
-    SendChatMessage(msg)
+    local parts = {}
+    for _, m in ipairs(murderers) do table.insert(parts, m) end
+    for _, s in ipairs(sheriffs)  do table.insert(parts, s) end
+    local msg = table.concat(parts, " ")
+    if msg == "" then msg = "none" end
+    msg = msg .. " | Bonny hub"
+    SendChat(msg)
 end)
+RegisterLang(chatBtn, "chatRoles", "💬  ")
 
--- ============ ВКЛАДКА VISUAL ============
-CreateSection(VisualTab, "Visual Features")
+-- ============ VISUAL TAB ============
+local visSec = CreateSection(VisualTab, L("visualFeatures"))
+local visSecLabel = visSec:FindFirstChild("SectionLabel")
+if visSecLabel then RegisterLang(visSecLabel, "visualFeatures") end
 
 local espEnabled = false
 local espObjects = {}
 
-CreateToggle(VisualTab, "👁️  ESP Players (Outline + Fill)", false, function(state)
+local espToggle = CreateToggle(VisualTab, "👁️  " .. L("esp"), false, function(state)
     espEnabled = state
     if not state then
         for _, data in pairs(espObjects) do
@@ -656,6 +667,7 @@ CreateToggle(VisualTab, "👁️  ESP Players (Outline + Fill)", false, function
         espObjects = {}
     end
 end)
+RegisterLang(espToggle, "esp", "👁️  ")
 
 local function createESP(plr)
     if plr == LocalPlayer then return end
@@ -666,13 +678,12 @@ local function createESP(plr)
     local role = GetRole(plr)
     local outlineColor, fillColor = GetRoleColors(role)
 
-    -- Highlight: обводка + заливка внутри
     local hl = Instance.new("Highlight")
     hl.Name = "BonnyESP"
     hl.Adornee = plr.Character
-    hl.FillColor = fillColor          -- 🎨 заливка внутри (светлая)
-    hl.FillTransparency = 0.7         -- полупрозрачная
-    hl.OutlineColor = outlineColor    -- 🎨 обводка (тёмная/основная)
+    hl.FillColor = fillColor
+    hl.FillTransparency = 0.7
+    hl.OutlineColor = outlineColor
     hl.OutlineTransparency = 0
     hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
     hl.Parent = plr.Character
@@ -709,7 +720,6 @@ end
 
 RunService.RenderStepped:Connect(function()
     if not espEnabled then return end
-
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer then
             if plr.Character and plr.Character:FindFirstChild("Head") then
@@ -736,7 +746,6 @@ RunService.RenderStepped:Connect(function()
             end
         end
     end
-
     for plr, _ in pairs(espObjects) do
         if not plr.Parent then removeESP(plr) end
     end
@@ -744,7 +753,7 @@ end)
 
 Players.PlayerRemoving:Connect(removeESP)
 
-CreateToggle(VisualTab, "💡  Fullbright", false, function(state)
+local fbToggle = CreateToggle(VisualTab, "💡  " .. L("fullbright"), false, function(state)
     local l = game:GetService("Lighting")
     if state then
         l.Ambient = Color3.fromRGB(255, 255, 255)
@@ -758,73 +767,245 @@ CreateToggle(VisualTab, "💡  Fullbright", false, function(state)
         l.GlobalShadows = true
     end
 end)
+RegisterLang(fbToggle, "fullbright", "💡  ")
 
-CreateToggle(VisualTab, "🌫️  Remove Fog", false, function(state)
+local fogToggle = CreateToggle(VisualTab, "🌫️  " .. L("removeFog"), false, function(state)
     game:GetService("Lighting").FogEnd = state and 100000 or 1000
 end)
+RegisterLang(fogToggle, "removeFog", "🌫️  ")
 
--- ============ ВКЛАДКА TROLL ============
-CreateSection(TrollTab, "Troll Features")
+-- ============ ROUND TIMER ============
+local timerSec = CreateSection(VisualTab, L("roundTimer"))
+local timerSecLabel = timerSec:FindFirstChild("SectionLabel")
+if timerSecLabel then RegisterLang(timerSecLabel, "roundTimer") end
 
-CreateButton(TrollTab, "🤸  Flip Character", function()
-    local char = LocalPlayer.Character
-    if char and char:FindFirstChild("HumanoidRootPart") then
-        char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.Angles(math.rad(180), 0, 0)
-    end
-end)
+local TimerLabel = Instance.new("TextLabel")
+TimerLabel.Size = UDim2.new(1, 0, 0, 32)
+TimerLabel.BackgroundColor3 = H.THEME.Element
+TimerLabel.BackgroundTransparency = 0.15
+TimerLabel.Text = "⏱️  " .. L("roundTimer") .. ": --"
+TimerLabel.TextColor3 = H.THEME.Text
+TimerLabel.Font = Enum.Font.GothamBold
+TimerLabel.TextSize = 13
+TimerLabel.BorderSizePixel = 0
+TimerLabel.Parent = VisualTab
+local TLC = Instance.new("UICorner") TLC.CornerRadius = UDim.new(0, 8) TLC.Parent = TimerLabel
+local TLS = Instance.new("UIStroke") TLS.Color = H.THEME.Gold TLS.Thickness = 1 TLS.Transparency = 0.5 TLS.Parent = TimerLabel
 
-local spamDance = false
-CreateToggle(TrollTab, "💃  Dance Spam", false, function(state) spamDance = state end)
-RunService.Heartbeat:Connect(function()
-    if spamDance then
-        local char = LocalPlayer.Character
-        if char then
-            local hum = char:FindFirstChildOfClass("Humanoid")
-            if hum then
-                local anim = Instance.new("Animation")
-                anim.AnimationId = "rbxassetid://182435998"
-                local load = hum:LoadAnimation(anim)
-                load:Play()
+RegisterLang(TimerLabel, "roundTimer", "⏱️  ")
+
+local function GetRoundTime()
+    local pg = LocalPlayer:FindFirstChild("PlayerGui")
+    if pg then
+        for _, gui in pairs(pg:GetDescendants()) do
+            if gui:IsA("TextLabel") then
+                local t = gui.Text
+                if t and t:match("^%d+:%d+$") then
+                    return t
+                end
             end
         end
     end
+    return nil
+end
+
+task.spawn(function()
+    while TimerLabel.Parent do
+        local t = GetRoundTime()
+        if t then
+            TimerLabel.Text = "⏱️  " .. L("roundTimer") .. ": " .. t
+        else
+            TimerLabel.Text = "⏱️  " .. L("roundTimer") .. ": " .. L("roundEnded")
+        end
+        task.wait(0.5)
+    end
 end)
 
-local speedEnabled = false
-CreateToggle(TrollTab, "⚡  Speed 100", false, function(state)
-    speedEnabled = state
+print("[Bonny Hub] Part 2 loaded (Lang + Roles + Main + Visual)")
+--[[
+    BONNY HUB | MM2 Premium Script
+    PART 3: Teleports + Troll + Settings
+--]]
+
+local H = _G.BonnyHub
+if not H then warn("[Bonny Hub] Run PART 1 first!") return end
+if not H.GetRole then warn("[Bonny Hub] Run PART 2 first!") return end
+
+local LocalPlayer    = H.LocalPlayer
+local Players        = H.Players
+local RunService     = H.RunService
+local StarterGui     = H.StarterGui
+local TeleportsTab   = H.TeleportsTab
+local TrollTab       = H.TrollTab
+local SettingsTab    = H.SettingsTab
+local TabButtons     = H.TabButtons
+local CreateSection  = H.CreateSection
+local CreateButton   = H.CreateButton
+local CreateToggle   = H.CreateToggle
+local GetRole        = H.GetRole
+local Lang           = H.Lang
+local L              = H.L
+local RegisterLang   = H.RegisterLang
+local ApplyLang      = H.ApplyLang
+
+-- ============ TELEPORTS TAB ============
+local tpSec = CreateSection(TeleportsTab, L("teleports"))
+local tpSecLabel = tpSec:FindFirstChild("SectionLabel")
+if tpSecLabel then RegisterLang(tpSecLabel, "teleports") end
+
+local function TPToPlayer(roleFilter)
     local char = LocalPlayer.Character
-    if char and char:FindFirstChildOfClass("Humanoid") then
-        char.Humanoid.WalkSpeed = state and 100 or 16
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            if GetRole(plr) == roleFilter then
+                char.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
+                return
+            end
+        end
     end
-end)
-LocalPlayer.CharacterAdded:Connect(function(char)
-    wait(1)
-    if speedEnabled then
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if hum then hum.WalkSpeed = 100 end
-    end
-end)
+    StarterGui:SetCore("SendNotification", {
+        Title = "Bonny Hub",
+        Text = L("noTarget"),
+        Duration = 2
+    })
+end
 
-CreateButton(TrollTab, "💬  Chat Spam", function()
-    for i = 1, 10 do
-        SendChatMessage("Bonny Hub ON TOP 🔥")
-        wait(0.5)
-    end
+local tpMurder = CreateButton(TeleportsTab, "🔴  " .. L("tpMurderer"), function()
+    TPToPlayer("Murderer")
 end)
+RegisterLang(tpMurder, "tpMurderer", "🔴  ")
 
-CreateButton(TrollTab, "💥  Visual Explosion", function()
+local tpSheriff = CreateButton(TeleportsTab, "🔵  " .. L("tpSheriff"), function()
+    TPToPlayer("Sheriff")
+end)
+RegisterLang(tpSheriff, "tpSheriff", "🔵  ")
+
+local tpMap = CreateButton(TeleportsTab, "🗺️  " .. L("tpMap"), function()
     local char = LocalPlayer.Character
-    if char and char:FindFirstChild("HumanoidRootPart") then
-        local e = Instance.new("Explosion")
-        e.Position = char.HumanoidRootPart.Position
-        e.BlastRadius = 5
-        e.BlastPressure = 0
-        e.Parent = workspace
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    local spawn = workspace:FindFirstChildOfClass("SpawnLocation")
+    if not spawn then
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("SpawnLocation") then spawn = obj break end
+        end
+    end
+    if spawn then
+        char.HumanoidRootPart.CFrame = spawn.CFrame + Vector3.new(0, 5, 0)
+    else
+        char.HumanoidRootPart.CFrame = CFrame.new(0, 50, 0)
     end
 end)
+RegisterLang(tpMap, "tpMap", "🗺️  ")
 
--- ============ АКТИВАЦИЯ ПЕРВОЙ ВКЛАДКИ ============
+local tpSpawn = CreateButton(TeleportsTab, "🏠  " .. L("tpSpawn"), function()
+    local char = LocalPlayer.Character
+    if not char then return end
+    char:BreakJoints()
+end)
+RegisterLang(tpSpawn, "tpSpawn", "🏠  ")
+
+-- ============ TROLL TAB ============
+local trSec = CreateSection(TrollTab, L("trollFeatures"))
+local trSecLabel = trSec:FindFirstChild("SectionLabel")
+if trSecLabel then RegisterLang(trSecLabel, "trollFeatures") end
+
+-- Touch Fling
+local touchFlingEnabled = false
+local touchFlingConnections = {}
+
+local function setupTouchFling()
+    for _, c in pairs(touchFlingConnections) do c:Disconnect() end
+    touchFlingConnections = {}
+
+    local char = LocalPlayer.Character
+    if not char then return end
+
+    for _, part in pairs(char:GetChildren()) do
+        if part:IsA("BasePart") then
+            local conn = part.Touched:Connect(function(hit)
+                if not touchFlingEnabled then return end
+                local otherChar = hit:FindFirstAncestorOfClass("Model")
+                if not otherChar then return end
+                local otherPlayer = Players:GetPlayerFromCharacter(otherChar)
+                if otherPlayer and otherPlayer ~= LocalPlayer then
+                    local otherHRP = otherChar:FindFirstChild("HumanoidRootPart")
+                    if otherHRP then
+                        local bv = Instance.new("BodyVelocity")
+                        bv.Velocity = Vector3.new(999999, 999999, 999999)
+                        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                        bv.Parent = otherHRP
+                        game:GetService("Debris"):AddItem(bv, 0.15)
+                    end
+                end
+            end)
+            table.insert(touchFlingConnections, conn)
+        end
+    end
+end
+
+local touchFlingToggle = CreateToggle(TrollTab, "✋  " .. L("touchFling"), false, function(state)
+    touchFlingEnabled = state
+    if state then
+        setupTouchFling()
+    else
+        for _, c in pairs(touchFlingConnections) do c:Disconnect() end
+        touchFlingConnections = {}
+    end
+end)
+RegisterLang(touchFlingToggle, "touchFling", "✋  ")
+
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(1)
+    if touchFlingEnabled then setupTouchFling() end
+end)
+
+-- Explosion Self
+local explosionBtn = CreateButton(TrollTab, "💥  " .. L("explosionSelf"), function()
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+
+    local e = Instance.new("Explosion")
+    e.Position = hrp.Position
+    e.BlastRadius = 10
+    e.BlastPressure = 50000
+    e.DestroyJointRadiusPercent = 1
+    e.Parent = workspace
+end)
+RegisterLang(explosionBtn, "explosionSelf", "💥  ")
+
+-- ============ SETTINGS TAB ============
+local setSec = CreateSection(SettingsTab, L("settings"))
+local setSecLabel = setSec:FindFirstChild("SectionLabel")
+if setSecLabel then RegisterLang(setSecLabel, "settings") end
+
+local langLabel = Instance.new("TextLabel")
+langLabel.Size = UDim2.new(1, 0, 0, 30)
+langLabel.BackgroundColor3 = H.THEME.Element
+langLabel.BackgroundTransparency = 0.15
+langLabel.Text = "  🌐  " .. L("language")
+langLabel.TextColor3 = H.THEME.Text
+langLabel.Font = Enum.Font.GothamMedium
+langLabel.TextSize = 12
+langLabel.TextXAlignment = Enum.TextXAlignment.Left
+langLabel.BorderSizePixel = 0
+langLabel.Parent = SettingsTab
+local LLC = Instance.new("UICorner") LLC.CornerRadius = UDim.new(0, 8) LLC.Parent = langLabel
+RegisterLang(langLabel, "language", "🌐  ")
+
+CreateButton(SettingsTab, "🇬🇧  English", function()
+    Lang.current = "en"
+    ApplyLang()
+end)
+
+CreateButton(SettingsTab, "🇷🇺  Русский", function()
+    Lang.current = "ru"
+    ApplyLang()
+end)
+
+-- ============ ACTIVATE FIRST TAB ============
 for _, btn in pairs(TabButtons) do
     btn.MouseButton1Click:Fire()
     break
@@ -832,8 +1013,9 @@ end
 
 StarterGui:SetCore("SendNotification", {
     Title = "★ Bonny Hub",
-    Text = "Premium loaded successfully!",
+    Text = L("loaded"),
     Duration = 3
 })
 
-print("[Bonny Hub] Часть 2 загружена (функции готовы)")
+print("[Bonny Hub] Part 3 loaded (Teleports + Troll + Settings)")
+print("[Bonny Hub] ✨ All 3 parts loaded successfully!")
