@@ -1,7 +1,6 @@
 --[[
     ✨ BONNY HUB PREMIUM ✨
     MM2 Script | All-in-One
-    Aimbot + ESP + Timer + Teleports + Troll + Settings
 --]]
 
 if _G.BonnyHubLoaded then
@@ -34,15 +33,13 @@ local THEME = {
     Shadow        = Color3.fromRGB(0, 0, 0)
 }
 
--- ============================================
 -- LANGUAGE
--- ============================================
 local Lang = {
     current = "en",
     strings = {
         en = {
             mainFeatures="Main Features", noclip="Noclip", autoPickupGun="Auto Pickup Gun",
-            chatInfo="Chat Info", chatRoles="Copy Roles to Clipboard", chatCopied="Copied! Paste in chat (Ctrl+V)",
+            chatInfo="Chat Info", chatRoles="Copy Roles to Clipboard", chatCopied="Copied! Paste in chat",
             visualFeatures="Visual Features", esp="ESP Players", espGun="ESP Guns (Orange)",
             fullbright="Fullbright", removeFog="Remove Fog", roundTimer="Round Timer",
             aimbot="Aimbot Murderer", aimWall="Aim Through Walls", aimPart="Aim Part",
@@ -57,7 +54,7 @@ local Lang = {
         },
         ru = {
             mainFeatures="Основные функции", noclip="Noclip", autoPickupGun="Авто-подбор пистолета",
-            chatInfo="Информация в чат", chatRoles="Скопировать роли в буфер", chatCopied="Скопировано! Вставь в чат (Ctrl+V)",
+            chatInfo="Информация в чат", chatRoles="Скопировать роли в буфер", chatCopied="Скопировано! Вставь в чат",
             visualFeatures="Визуальные функции", esp="ESP игроков", espGun="ESP пистолета (оранжевый)",
             fullbright="Полная яркость", removeFog="Убрать туман", roundTimer="Таймер раунда",
             aimbot="Аим на мардера", aimWall="Наводиться через стены", aimPart="Часть тела",
@@ -91,9 +88,7 @@ local function ApplyLang()
     end
 end
 
--- ============================================
--- SOUND SYSTEM
--- ============================================
+-- SOUND
 local SoundConfig = { clickSound = 0, disableSound = 0 }
 local SOUND_IDS = {
     [0]=nil, [1]="rbxassetid://87437544236708",
@@ -104,15 +99,12 @@ local soundCache = {}
 local function PreloadSound(id)
     if soundCache[id] then return soundCache[id] end
     local s = Instance.new("Sound")
-    s.SoundId = id
-    s.Volume = 1.5
-    s.Parent = SoundService
+    s.SoundId = id; s.Volume = 1.5; s.Parent = SoundService
     soundCache[id] = s
     return s
 end
 for _, id in pairs(SOUND_IDS) do if id then PreloadSound(id) end end
 for _, id in pairs(DIS_SOUND) do if id then PreloadSound(id) end end
-
 local function PlayClickSound()
     local id = SOUND_IDS[SoundConfig.clickSound]
     if not id then return end
@@ -133,9 +125,7 @@ local function OnToggleSound(state)
     end
 end
 
--- ============================================
 -- HELPERS
--- ============================================
 local function IsGun(t)
     if not t or not t:IsA("Tool") then return false end
     local n = t.Name:lower()
@@ -185,9 +175,7 @@ local function CopyToClipboard(text)
     return false
 end
 
--- ============================================
 -- SCREEN GUI
--- ============================================
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "BonnyHub"
 ScreenGui.ResetOnSpawn = false
@@ -219,7 +207,6 @@ BG.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(1, THEME.Background2)
 })
 BG.Rotation = 135
-
 local OG = Instance.new("UIStroke", MainFrame)
 OG.Color = THEME.Accent; OG.Thickness = 2; OG.Transparency = 0.2
 
@@ -229,7 +216,7 @@ Shadow.BackgroundColor3 = THEME.Shadow; Shadow.BackgroundTransparency = 0.7
 Shadow.BorderSizePixel = 0; Shadow.ZIndex = -1
 Instance.new("UICorner", Shadow).CornerRadius = UDim.new(0, 20)
 
--- Title
+-- Title bar
 local TB = Instance.new("Frame", MainFrame)
 TB.Size = UDim2.new(1, 0, 0, 46); TB.BackgroundColor3 = THEME.Sidebar
 TB.BackgroundTransparency = 0.2; TB.BorderSizePixel = 0
@@ -268,6 +255,7 @@ ST.Size = UDim2.new(1, -200, 0, 14); ST.Position = UDim2.new(0, 56, 0, 26)
 ST.BackgroundTransparency = 1; ST.Text = "PREMIUM EDITION"; ST.TextColor3 = THEME.TextDim
 ST.Font = Enum.Font.Gotham; ST.TextSize = 9; ST.TextXAlignment = Enum.TextXAlignment.Left
 
+-- ============ TITLE BUTTONS ============
 local function CreateTitleBtn(sym, x, clr, cb)
     local B = Instance.new("TextButton", TB)
     B.Size = UDim2.new(0, 28, 0, 28); B.Position = UDim2.new(1, x, 0.5, -14)
@@ -282,21 +270,34 @@ local function CreateTitleBtn(sym, x, clr, cb)
 end
 
 local miniBtn
+
 CreateTitleBtn("−", -74, THEME.TextDim, function()
     MainFrame.Visible = false
     if miniBtn then miniBtn:Destroy() end
+    
     local M = Instance.new("TextButton", ScreenGui)
-    M.Size = UDim2.new(0, 60, 0, 60); M.Position = UDim2.new(0, 100, 0.5, -30)
-    M.BackgroundColor3 = THEME.Background; M.Text = "★"; M.TextColor3 = THEME.Text
-    M.TextScaled = true; M.Font = Enum.Font.GothamBold; M.BorderSizePixel = 0; M.Active = true
+    M.Size = UDim2.new(0, 60, 0, 60)
+    M.Position = UDim2.new(0, 100, 0.5, -30)
+    M.BackgroundColor3 = THEME.Background
+    M.Text = "★"
+    M.TextColor3 = THEME.Text
+    M.TextScaled = true
+    M.Font = Enum.Font.GothamBold
+    M.BorderSizePixel = 0
+    M.Active = true
+    M.AutoButtonColor = false
     Instance.new("UICorner", M).CornerRadius = UDim.new(0, 14)
+    
     local MG = Instance.new("UIGradient", M)
     MG.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, THEME.Accent),
         ColorSequenceKeypoint.new(1, THEME.Purple)
     })
     MG.Rotation = 45
-    local MS = Instance.new("UIStroke", M); MS.Color = THEME.Accent2; MS.Thickness = 2
+    
+    local MS = Instance.new("UIStroke", M)
+    MS.Color = THEME.Accent2; MS.Thickness = 2
+    
     task.spawn(function()
         while M.Parent do
             TweenService:Create(MS, TweenInfo.new(1), {Transparency=0.5}):Play()
@@ -306,30 +307,46 @@ CreateTitleBtn("−", -74, THEME.TextDim, function()
             task.wait(1)
         end
     end)
-    local drag, ds, sp = false, nil, nil
-    M.InputBegan:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
-            drag = true; ds = i.Position; sp = M.Position
+    
+    local dragStart, startPos, moved = nil, nil, false
+    
+    M.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragStart = input.Position
+            startPos = M.Position
+            moved = false
         end
     end)
-    UserInputService.InputChanged:Connect(function(i)
-        if drag and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then
-            local d = i.Position - ds
-            M.Position = UDim2.new(sp.X.Scale, sp.X.Offset+d.X, sp.Y.Scale, sp.Y.Offset+d.Y)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if dragStart and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            if math.abs(delta.X) > 5 or math.abs(delta.Y) > 5 then
+                moved = true
+            end
+            if moved then
+                M.Position = UDim2.new(
+                    startPos.X.Scale, startPos.X.Offset + delta.X,
+                    startPos.Y.Scale, startPos.Y.Offset + delta.Y
+                )
+            end
         end
     end)
-    UserInputService.InputEnded:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then drag = false end
-    end)
-    M.MouseButton1Click:Connect(function()
-        if not drag then
-            MainFrame.Visible = true
-            M:Destroy()
-            miniBtn = nil
+    
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            if not moved and dragStart then
+                MainFrame.Visible = true
+                M:Destroy()
+                miniBtn = nil
+            end
+            dragStart = nil
+            startPos = nil
+            moved = false
         end
     end)
-    miniBtn = M
 end)
+
 CreateTitleBtn("×", -42, Color3.fromRGB(255,80,80), function()
     ScreenGui:Destroy()
     _G.BonnyHubLoaded = false
@@ -374,7 +391,6 @@ local AF = Instance.new("Frame", PF)
 AF.Size = UDim2.new(0, 38, 0, 38); AF.Position = UDim2.new(0, 6, 0.5, -19)
 AF.BackgroundColor3 = THEME.Accent; AF.BorderSizePixel = 0
 Instance.new("UICorner", AF).CornerRadius = UDim.new(1, 0)
-
 local AI = Instance.new("ImageLabel", AF)
 AI.Size = UDim2.new(1, -4, 1, -4); AI.Position = UDim2.new(0, 2, 0, 2)
 AI.BackgroundTransparency = 1
@@ -396,7 +412,6 @@ OD.Size = UDim2.new(0, 10, 0, 10); OD.Position = UDim2.new(1, -18, 0.5, -5)
 OD.BackgroundColor3 = THEME.Success; OD.BorderSizePixel = 0
 Instance.new("UICorner", OD).CornerRadius = UDim.new(1, 0)
 local ODS = Instance.new("UIStroke", OD); ODS.Color = THEME.Success; ODS.Thickness = 2; ODS.Transparency = 0.4
-
 task.spawn(function()
     while OD.Parent do
         TweenService:Create(ODS, TweenInfo.new(1), {Transparency=0.8, Thickness=4}):Play()
@@ -407,12 +422,8 @@ task.spawn(function()
     end
 end)
 
--- ============================================
 -- TABS
--- ============================================
-local Tabs = {}
-local TabButtons = {}
-
+local Tabs, TabButtons = {}, {}
 local function CreateTab(name, icon)
     local B = Instance.new("TextButton")
     B.Size = UDim2.new(1, 0, 0, 32); B.BackgroundColor3 = THEME.Element
@@ -421,26 +432,20 @@ local function CreateTab(name, icon)
     B.TextXAlignment = Enum.TextXAlignment.Left; B.BorderSizePixel = 0; B.AutoButtonColor = false
     B.Parent = TabListFrame
     Instance.new("UICorner", B).CornerRadius = UDim.new(0, 8)
-
     local St = Instance.new("Frame", B)
     St.Name = "Stripe"; St.Size = UDim2.new(0, 3, 0.6, 0)
     St.Position = UDim2.new(0, 0, 0.2, 0); St.BackgroundColor3 = THEME.Accent
     St.BorderSizePixel = 0; St.Visible = false
     Instance.new("UICorner", St).CornerRadius = UDim.new(1, 0)
-
     local TC = Instance.new("ScrollingFrame")
     TC.Size = UDim2.new(1, -20, 1, -20); TC.Position = UDim2.new(0, 10, 0, 10)
     TC.BackgroundTransparency = 1; TC.BorderSizePixel = 0
     TC.CanvasSize = UDim2.new(0, 0, 0, 0); TC.AutomaticCanvasSize = Enum.AutomaticSize.Y
     TC.ScrollBarThickness = 3; TC.ScrollBarImageColor3 = THEME.Accent; TC.Visible = false
     TC.Parent = Content
-
     local CL = Instance.new("UIListLayout", TC)
     CL.Padding = UDim.new(0, 6); CL.SortOrder = Enum.SortOrder.LayoutOrder
-
-    Tabs[name] = TC
-    TabButtons[name] = B
-
+    Tabs[name] = TC; TabButtons[name] = B
     B.MouseButton1Click:Connect(function()
         for _, t in pairs(Tabs) do t.Visible = false end
         for _, btn in pairs(TabButtons) do
@@ -470,9 +475,7 @@ local function CreateTab(name, icon)
     return TC
 end
 
--- ============================================
 -- ELEMENTS
--- ============================================
 local function CreateSection(parent, text)
     local W = Instance.new("Frame", parent)
     W.Size = UDim2.new(1, 0, 0, 26); W.BackgroundTransparency = 1
@@ -517,19 +520,16 @@ local function CreateToggle(parent, text, def, cb)
     F.TextXAlignment = Enum.TextXAlignment.Left; F.BorderSizePixel = 0; F.AutoButtonColor = false
     Instance.new("UICorner", F).CornerRadius = UDim.new(0, 8)
     local S = Instance.new("UIStroke", F); S.Color = THEME.Accent; S.Thickness = 1; S.Transparency = 0.85
-
     local SB = Instance.new("Frame", F)
     SB.Size = UDim2.new(0, 36, 0, 18); SB.Position = UDim2.new(1, -46, 0.5, -9)
     SB.BackgroundColor3 = state and THEME.Success or Color3.fromRGB(60, 40, 50)
     SB.BorderSizePixel = 0
     Instance.new("UICorner", SB).CornerRadius = UDim.new(1, 0)
-
     local Ci = Instance.new("Frame", SB)
     Ci.Size = UDim2.new(0, 14, 0, 14)
     Ci.Position = state and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
     Ci.BackgroundColor3 = THEME.Text; Ci.BorderSizePixel = 0
     Instance.new("UICorner", Ci).CornerRadius = UDim.new(1, 0)
-
     F.MouseButton1Click:Connect(function()
         state = not state
         TweenService:Create(SB, TweenInfo.new(0.2), {
@@ -549,18 +549,13 @@ local function CreateToggle(parent, text, def, cb)
     return F
 end
 
--- ============================================
--- CREATE TABS
--- ============================================
 local MainTab      = CreateTab("Main", "🏠")
 local VisualTab    = CreateTab("Visual", "👁")
 local TeleportsTab = CreateTab("Teleports", "📍")
 local TrollTab     = CreateTab("Troll", "☠")
 local SettingsTab  = CreateTab("Settings", "⚙")
 
--- ============================================
--- MAIN TAB
--- ============================================
+-- ===== MAIN TAB =====
 local mainSec = CreateSection(MainTab, L("mainFeatures"))
 local ml = mainSec:FindFirstChild("SectionLabel")
 if ml then RegisterLang(ml, "mainFeatures") end
@@ -663,9 +658,7 @@ local chatBtn = CreateButton(MainTab, "💬  " .. L("chatRoles"), function()
 end)
 RegisterLang(chatBtn, "chatRoles", "💬  ")
 
--- ============================================
--- VISUAL TAB
--- ============================================
+-- ===== VISUAL TAB =====
 local visSec = CreateSection(VisualTab, L("visualFeatures"))
 local vl = visSec:FindFirstChild("SectionLabel")
 if vl then RegisterLang(vl, "visualFeatures") end
@@ -747,7 +740,6 @@ local egToggle = CreateToggle(VisualTab, "🔶  " .. L("espGun"), false, functio
     end
 end)
 RegisterLang(egToggle, "espGun", "🔶  ")
-
 task.spawn(function()
     while true do
         if espGunEnabled then
@@ -790,9 +782,7 @@ local fogToggle = CreateToggle(VisualTab, "🌫️  " .. L("removeFog"), false, 
 end)
 RegisterLang(fogToggle, "removeFog", "🌫️  ")
 
--- ============================================
 -- AIMBOT
--- ============================================
 local aimSec = CreateSection(VisualTab, L("aimbot"))
 local al = aimSec:FindFirstChild("SectionLabel")
 if al then RegisterLang(al, "aimbot") end
@@ -900,12 +890,10 @@ local sliderBG = Instance.new("TextButton", SettingsPanel)
 sliderBG.Size = UDim2.new(1, 0, 0, 14); sliderBG.BackgroundColor3 = THEME.Element
 sliderBG.Text = ""; sliderBG.BorderSizePixel = 0; sliderBG.AutoButtonColor = false
 Instance.new("UICorner", sliderBG).CornerRadius = UDim.new(1, 0)
-
 local sliderFill = Instance.new("Frame", sliderBG)
 sliderFill.Size = UDim2.new(AimbotConfig.smoothness, 0, 1, 0)
 sliderFill.BackgroundColor3 = THEME.Accent; sliderFill.BorderSizePixel = 0
 Instance.new("UICorner", sliderFill).CornerRadius = UDim.new(1, 0)
-
 local sliderDot = Instance.new("Frame", sliderBG)
 sliderDot.Size = UDim2.new(0, 16, 0, 16); sliderDot.AnchorPoint = Vector2.new(0.5, 0.5)
 sliderDot.Position = UDim2.new(AimbotConfig.smoothness, 0, 0.5, 0)
@@ -1008,9 +996,7 @@ RunService.RenderStepped:Connect(function()
     myHRP.CFrame = myHRP.CFrame:Lerp(desired, alpha)
 end)
 
--- ============================================
 -- ROUND TIMER
--- ============================================
 local timerSec = CreateSection(VisualTab, L("roundTimer"))
 local tl = timerSec:FindFirstChild("SectionLabel")
 if tl then RegisterLang(tl, "roundTimer") end
@@ -1020,7 +1006,6 @@ TimerGui.Name = "BonnyTimer"
 TimerGui.ResetOnSpawn = false
 TimerGui.IgnoreGuiInset = true
 TimerGui.DisplayOrder = 999
-
 if gethui then TimerGui.Parent = gethui()
 elseif syn and syn.protect_gui then syn.protect_gui(TimerGui); TimerGui.Parent = game:GetService("CoreGui")
 else
@@ -1050,7 +1035,6 @@ TimerText.Size = UDim2.new(1, -50, 1, 0); TimerText.Position = UDim2.new(0, 48, 
 TimerText.BackgroundTransparency = 1; TimerText.Text = "03:00"
 TimerText.TextColor3 = THEME.Text; TimerText.Font = Enum.Font.GothamBold
 TimerText.TextSize = 26; TimerText.TextXAlignment = Enum.TextXAlignment.Left
-
 local TimerGrad = Instance.new("UIGradient", TimerText)
 TimerGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, THEME.Accent2),
@@ -1063,12 +1047,10 @@ local function FormatTime(sec)
     return string.format("%02d:%02d", math.floor(sec / 60), sec % 60)
 end
 local function UpdateTimer() TimerText.Text = FormatTime(roundTimeLeft) end
-
 LocalPlayer.CharacterAdded:Connect(function()
     task.wait(2)
     if roundTimerEnabled then roundTimeLeft = 180; UpdateTimer() end
 end)
-
 local timerToggle = CreateToggle(VisualTab, "⏱️  " .. L("roundTimer"), false, function(state)
     roundTimerEnabled = state
     OnToggleSound(state)
@@ -1091,15 +1073,12 @@ local timerToggle = CreateToggle(VisualTab, "⏱️  " .. L("roundTimer"), false
 end)
 RegisterLang(timerToggle, "roundTimer", "⏱️  ")
 
--- ============================================
 -- TELEPORTS
--- ============================================
 local tpSec = CreateSection(TeleportsTab, L("teleports"))
 local tpl = tpSec:FindFirstChild("SectionLabel")
 if tpl then RegisterLang(tpl, "teleports") end
 
 local SPAWN_POS = Vector3.new(-16.2, 504.8, -27.3)
-
 local function TPToPlayer(roleFilter)
     local char = LocalPlayer.Character
     if not char or not char:FindFirstChild("HumanoidRootPart") then return end
@@ -1123,25 +1102,20 @@ local tpM = CreateButton(TeleportsTab, "🔴  " .. L("tpMurderer"), function()
     PlayClickSound(); TPToPlayer("Murderer")
 end)
 RegisterLang(tpM, "tpMurderer", "🔴  ")
-
 local tpS = CreateButton(TeleportsTab, "🔵  " .. L("tpSheriff"), function()
     PlayClickSound(); TPToPlayer("Sheriff")
 end)
 RegisterLang(tpS, "tpSheriff", "🔵  ")
-
 local tpMp = CreateButton(TeleportsTab, "🗺️  " .. L("tpMap"), function()
     PlayClickSound(); TpToSpawn()
 end)
 RegisterLang(tpMp, "tpMap", "🗺️  ")
-
 local tpSp = CreateButton(TeleportsTab, "🏠  " .. L("tpSpawn"), function()
     PlayClickSound(); TpToSpawn()
 end)
 RegisterLang(tpSp, "tpSpawn", "🏠  ")
 
--- ============================================
 -- TROLL
--- ============================================
 local trSec = CreateSection(TrollTab, L("trollFeatures"))
 local trl = trSec:FindFirstChild("SectionLabel")
 if trl then RegisterLang(trl, "trollFeatures") end
@@ -1199,9 +1173,7 @@ LocalPlayer.CharacterAdded:Connect(function()
     if touchFlingEnabled then setupTouchFling() end
 end)
 
--- ============================================
 -- SETTINGS
--- ============================================
 local setSec = CreateSection(SettingsTab, L("settings"))
 local sl = setSec:FindFirstChild("SectionLabel")
 if sl then RegisterLang(sl, "settings") end
@@ -1212,16 +1184,11 @@ langLabel.Text = "  🌐  " .. L("language"); langLabel.TextColor3 = THEME.Gold
 langLabel.Font = Enum.Font.GothamBold; langLabel.TextSize = 12
 langLabel.TextXAlignment = Enum.TextXAlignment.Left
 RegisterLang(langLabel, "language", "🌐  ")
-
 CreateButton(SettingsTab, "🇬🇧  English", function()
-    PlayClickSound()
-    Lang.current = "en"
-    ApplyLang()
+    PlayClickSound(); Lang.current = "en"; ApplyLang()
 end)
 CreateButton(SettingsTab, "🇷🇺  Русский", function()
-    PlayClickSound()
-    Lang.current = "ru"
-    ApplyLang()
+    PlayClickSound(); Lang.current = "ru"; ApplyLang()
 end)
 
 local clickLabel = Instance.new("TextLabel", SettingsTab)
@@ -1280,9 +1247,7 @@ end
 CreateDisBtn("1. " .. L("noSound") .. " (default)", 0)
 CreateDisBtn("2. " .. L("disableSound"), 1)
 
--- ============================================
 -- LAUNCH
--- ============================================
 for _, btn in pairs(TabButtons) do
     btn.MouseButton1Click:Fire()
     break
