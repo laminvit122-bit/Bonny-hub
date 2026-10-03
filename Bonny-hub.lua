@@ -99,8 +99,11 @@ local soundCache = {}
 local function PreloadSound(id)
     if soundCache[id] then return soundCache[id] end
     local s = Instance.new("Sound")
-    s.SoundId = id; s.Volume = 1.5; s.Parent = SoundService
-    soundCache[id] = s; return s
+    s.SoundId = id
+    s.Volume = 1.5
+    s.Parent = SoundService
+    soundCache[id] = s
+    return s
 end
 
 for _, id in pairs(SOUND_IDS) do if id then PreloadSound(id) end end
@@ -118,7 +121,9 @@ local function PlayDisable()
     local id = DIS_SOUND[SoundConfig.disable]
     if not id then return end
     local s = Instance.new("Sound")
-    s.SoundId = id; s.Volume = 1.5; s.Parent = SoundService
+    s.SoundId = id
+    s.Volume = 1.5
+    s.Parent = SoundService
     s:Play()
     game:GetService("Debris"):AddItem(s, 5)
 end
@@ -171,7 +176,9 @@ local function GetRole(plr)
         end
     end
 
-    scan(char); if bp then scan(bp) end; if cbp then scan(cbp) end
+    scan(char)
+    if bp then scan(bp) end
+    if cbp then scan(cbp) end
 
     if hg then return "Sheriff" end
     if hk then return "Murderer" end
@@ -214,9 +221,7 @@ MainFrame.BackgroundColor3 = THEME.Background
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.Draggable = true
-
-local MainCorner = Instance.new("UICorner", MainFrame)
-MainCorner.CornerRadius = UDim.new(0, 16)
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 16)
 
 local BG = Instance.new("UIGradient", MainFrame)
 BG.Color = ColorSequence.new({
@@ -236,9 +241,7 @@ TB.Size = UDim2.new(1, 0, 0, 46)
 TB.BackgroundColor3 = THEME.Sidebar
 TB.BackgroundTransparency = 0.2
 TB.BorderSizePixel = 0
-
-local TBC = Instance.new("UICorner", TB)
-TBC.CornerRadius = UDim.new(0, 16)
+Instance.new("UICorner", TB).CornerRadius = UDim.new(0, 16)
 
 local TBo = Instance.new("Frame", TB)
 TBo.Size = UDim2.new(1, 0, 0, 16)
@@ -252,9 +255,7 @@ LF.Size = UDim2.new(0, 32, 0, 32)
 LF.Position = UDim2.new(0, 14, 0.5, -16)
 LF.BackgroundColor3 = THEME.Accent
 LF.BorderSizePixel = 0
-
-local LFC = Instance.new("UICorner", LF)
-LFC.CornerRadius = UDim.new(0, 9)
+Instance.new("UICorner", LF).CornerRadius = UDim.new(0, 9)
 
 local LG = Instance.new("UIGradient", LF)
 LG.Color = ColorSequence.new({
@@ -326,9 +327,11 @@ local miniBtn
 
 TBtn("-", -74, THEME.TextDim, function()
     local closeTween = TweenService:Create(MainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-        Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0)
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0)
     })
-    closeTween:Play(); closeTween.Completed:Wait()
+    closeTween:Play()
+    closeTween.Completed:Wait()
     MainFrame.Visible = false
     MainFrame.Size = UDim2.new(0, 540, 0, 420)
     MainFrame.Position = UDim2.new(0.5, -270, 0.5, -210)
@@ -339,9 +342,13 @@ TBtn("-", -74, THEME.TextDim, function()
     M.Size = UDim2.new(0, 0, 0, 0)
     M.Position = UDim2.new(0, 100, 0.5, -30)
     M.BackgroundColor3 = THEME.Background
-    M.Text = "*"; M.TextColor3 = THEME.Text; M.TextScaled = true
-    M.Font = Enum.Font.GothamBold; M.BorderSizePixel = 0
-    M.Active = true; M.AutoButtonColor = false
+    M.Text = "*"
+    M.TextColor3 = THEME.Text
+    M.TextScaled = true
+    M.Font = Enum.Font.GothamBold
+    M.BorderSizePixel = 0
+    M.Active = true
+    M.AutoButtonColor = false
     Instance.new("UICorner", M).CornerRadius = UDim.new(0, 14)
 
     local MG = Instance.new("UIGradient", M)
@@ -349,7 +356,8 @@ TBtn("-", -74, THEME.TextDim, function()
     MG.Rotation = 45
 
     local MS = Instance.new("UIStroke", M)
-    MS.Color = THEME.Accent2; MS.Thickness = 2
+    MS.Color = THEME.Accent2
+    MS.Thickness = 2
 
     TweenService:Create(M, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 60, 0, 60)}):Play()
 
@@ -366,7 +374,9 @@ TBtn("-", -74, THEME.TextDim, function()
     local dragStart, startPos, moved = nil, nil, false
     M.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragStart = input.Position; startPos = M.Position; moved = false
+            dragStart = input.Position
+            startPos = M.Position
+            moved = false
         end
     end)
     UserInputService.InputChanged:Connect(function(input)
@@ -387,12 +397,16 @@ TBtn("-", -74, THEME.TextDim, function()
                 MainFrame.Size = UDim2.new(0, 0, 0, 0)
                 MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
                 TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-                    Size = UDim2.new(0, 540, 0, 420), Position = UDim2.new(0.5, -270, 0.5, -210)
+                    Size = UDim2.new(0, 540, 0, 420),
+                    Position = UDim2.new(0.5, -270, 0.5, -210)
                 }):Play()
                 t1.Completed:Wait()
-                M:Destroy(); miniBtn = nil
+                M:Destroy()
+                miniBtn = nil
             end
-            dragStart = nil; startPos = nil; moved = false
+            dragStart = nil
+            startPos = nil
+            moved = false
         end
     end)
     miniBtn = M
@@ -400,9 +414,11 @@ end)
 
 TBtn("x", -42, Color3.fromRGB(255, 80, 80), function()
     local t = TweenService:Create(MainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-        Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0)
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0)
     })
-    t:Play(); t.Completed:Wait()
+    t:Play()
+    t.Completed:Wait()
     ScreenGui:Destroy()
     _G.BonnyHubLoaded = false
 end)
@@ -415,25 +431,33 @@ SB.BackgroundTransparency = 0.15
 SB.BorderSizePixel = 0
 Instance.new("UICorner", SB).CornerRadius = UDim.new(0, 12)
 local SBS = Instance.new("UIStroke", SB)
-SBS.Color = THEME.Accent; SBS.Thickness = 1; SBS.Transparency = 0.6
+SBS.Color = THEME.Accent
+SBS.Thickness = 1
+SBS.Transparency = 0.6
 
 local VL = Instance.new("TextLabel", SB)
 VL.Size = UDim2.new(1, -20, 0, 26)
 VL.Position = UDim2.new(0, 10, 0, 10)
 VL.BackgroundColor3 = THEME.Element
 VL.BackgroundTransparency = 0.2
-VL.Text = "BONNY"; VL.TextColor3 = THEME.Gold
-VL.Font = Enum.Font.GothamBold; VL.TextSize = 11; VL.BorderSizePixel = 0
+VL.Text = "BONNY"
+VL.TextColor3 = THEME.Gold
+VL.Font = Enum.Font.GothamBold
+VL.TextSize = 11
+VL.BorderSizePixel = 0
 Instance.new("UICorner", VL).CornerRadius = UDim.new(0, 7)
 local VLS = Instance.new("UIStroke", VL)
-VLS.Color = THEME.Gold; VLS.Thickness = 1; VLS.Transparency = 0.7
+VLS.Color = THEME.Gold
+VLS.Thickness = 1
+VLS.Transparency = 0.7
 
 local TLF = Instance.new("Frame", SB)
 TLF.Size = UDim2.new(1, -20, 1, -50)
 TLF.Position = UDim2.new(0, 10, 0, 44)
 TLF.BackgroundTransparency = 1
 local TL = Instance.new("UIListLayout", TLF)
-TL.Padding = UDim.new(0, 6); TL.SortOrder = Enum.SortOrder.LayoutOrder
+TL.Padding = UDim.new(0, 6)
+TL.SortOrder = Enum.SortOrder.LayoutOrder
 
 local C = Instance.new("Frame", MainFrame)
 C.Size = UDim2.new(1, -185, 1, -125)
@@ -443,7 +467,9 @@ C.BackgroundTransparency = 0.15
 C.BorderSizePixel = 0
 Instance.new("UICorner", C).CornerRadius = UDim.new(0, 12)
 local CS = Instance.new("UIStroke", C)
-CS.Color = THEME.Accent; CS.Thickness = 1; CS.Transparency = 0.6
+CS.Color = THEME.Accent
+CS.Thickness = 1
+CS.Transparency = 0.6
 
 local PF = Instance.new("Frame", MainFrame)
 PF.Size = UDim2.new(1, -24, 0, 52)
@@ -453,7 +479,9 @@ PF.BackgroundTransparency = 0.3
 PF.BorderSizePixel = 0
 Instance.new("UICorner", PF).CornerRadius = UDim.new(0, 10)
 local PFS = Instance.new("UIStroke", PF)
-PFS.Color = THEME.Accent; PFS.Thickness = 1; PFS.Transparency = 0.6
+PFS.Color = THEME.Accent
+PFS.Thickness = 1
+PFS.Transparency = 0.6
 
 local AF = Instance.new("Frame", PF)
 AF.Size = UDim2.new(0, 40, 0, 40)
@@ -496,7 +524,9 @@ OD.BackgroundColor3 = THEME.Success
 OD.BorderSizePixel = 0
 Instance.new("UICorner", OD).CornerRadius = UDim.new(1, 0)
 local ODS = Instance.new("UIStroke", OD)
-ODS.Color = THEME.Success; ODS.Thickness = 2; ODS.Transparency = 0.4
+ODS.Color = THEME.Success
+ODS.Thickness = 2
+ODS.Transparency = 0.4
 
 task.spawn(function()
     while OD.Parent do
@@ -571,7 +601,8 @@ local function NewTab(name, iconId)
     TC.ScrollBarImageColor3 = THEME.Accent
     TC.Visible = false
     local CL = Instance.new("UIListLayout", TC)
-    CL.Padding = UDim.new(0, 6); CL.SortOrder = Enum.SortOrder.LayoutOrder
+    CL.Padding = UDim.new(0, 6)
+    CL.SortOrder = Enum.SortOrder.LayoutOrder
 
     Tabs[name] = TC
     TabsBtns[name] = B
@@ -616,12 +647,14 @@ local function NewSection(parent, text)
     local W = Instance.new("Frame", parent)
     W.Size = UDim2.new(1, 0, 0, 26)
     W.BackgroundTransparency = 1
+
     local Ln = Instance.new("Frame", W)
     Ln.Size = UDim2.new(1, 0, 0, 1)
     Ln.Position = UDim2.new(0, 0, 0.5, 0)
     Ln.BackgroundColor3 = THEME.Accent
     Ln.BackgroundTransparency = 0.5
     Ln.BorderSizePixel = 0
+
     local S = Instance.new("TextLabel", W)
     S.Name = "SectionLabel"
     S.Size = UDim2.new(0, 220, 1, 0)
@@ -636,7 +669,9 @@ local function NewSection(parent, text)
     S.BorderSizePixel = 0
     Instance.new("UICorner", S).CornerRadius = UDim.new(0, 6)
     return W
-endlocal function NewButton(parent, text, cb)
+end
+
+local function NewButton(parent, text, cb)
     local B = Instance.new("TextButton", parent)
     B.Size = UDim2.new(1, 0, 0, 32)
     B.BackgroundColor3 = THEME.Element
@@ -650,7 +685,9 @@ endlocal function NewButton(parent, text, cb)
     B.AutoButtonColor = false
     Instance.new("UICorner", B).CornerRadius = UDim.new(0, 8)
     local S = Instance.new("UIStroke", B)
-    S.Color = THEME.Accent; S.Thickness = 1; S.Transparency = 0.85
+    S.Color = THEME.Accent
+    S.Thickness = 1
+    S.Transparency = 0.85
     B.MouseEnter:Connect(function()
         TweenService:Create(B, TweenInfo.new(0.15), {BackgroundColor3 = THEME.ElementHover, BackgroundTransparency = 0}):Play()
     end)
@@ -702,7 +739,10 @@ local function NewToggle(parent, text, def, cb)
             BackgroundColor3 = state and THEME.Accent or THEME.Element,
             BackgroundTransparency = state and 0.6 or 0.15
         }):Play()
-        TweenService:Create(S, TweenInfo.new(0.2), {Thickness = state and 2 or 1, Transparency = state and 0 or 0.85}):Play()
+        TweenService:Create(S, TweenInfo.new(0.2), {
+            Thickness = state and 2 or 1,
+            Transparency = state and 0 or 0.85
+        }):Play()
         if cb then cb(state) end
     end)
 
@@ -745,7 +785,8 @@ local function StartNoclip()
 end
 
 local ncT = NewToggle(MainTab, L("noclip"), false, function(s)
-    noclipOn = s; OnSound(s)
+    noclipOn = s
+    OnSound(s)
     if s then StartNoclip() end
 end)
 RegLang(ncT, "noclip")
@@ -801,7 +842,8 @@ local function APLoop()
 end
 
 local apT = NewToggle(MainTab, L("autoPickup"), false, function(s)
-    apOn = s; OnSound(s)
+    apOn = s
+    OnSound(s)
     if s then APLoop() end
 end)
 RegLang(apT, "autoPickup")
@@ -815,8 +857,11 @@ local chBtn = NewButton(MainTab, L("chatRoles"), function()
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and plr.Character then
             local r = GetRole(plr)
-            if r == "Murderer" then msg = msg .. plr.Name .. "(murder) "
-            elseif r == "Sheriff" then msg = msg .. plr.Name .. "(sheriff) " end
+            if r == "Murderer" then
+                msg = msg .. plr.Name .. "(murder) "
+            elseif r == "Sheriff" then
+                msg = msg .. plr.Name .. "(sheriff) "
+            end
         end
     end
     if msg == "" then msg = "none " end
@@ -836,7 +881,8 @@ local espObj = {}
 local espConnections = {}
 
 local espT = NewToggle(VisualTab, L("esp"), false, function(s)
-    espOn = s; OnSound(s)
+    espOn = s
+    OnSound(s)
     if not s then
         for _, d in pairs(espObj) do
             if d.hl and d.hl.Parent then d.hl:Destroy() end
@@ -907,7 +953,6 @@ local function RemoveESP(plr)
     espObj[plr] = nil
 end
 
--- Подключение к респавну игрока
 local function HookPlayer(plr)
     if plr == LocalPlayer then return end
     if espConnections[plr] then espConnections[plr]:Disconnect() end
@@ -929,7 +974,6 @@ Players.PlayerRemoving:Connect(function(plr)
     if espConnections[plr] then espConnections[plr]:Disconnect() end
 end)
 
--- Также следим за новым раундом через LocalPlayer респавн
 LocalPlayer.CharacterAdded:Connect(function()
     if espOn then
         task.wait(3)
@@ -952,7 +996,6 @@ RunService.RenderStepped:Connect(function()
                     RemoveESP(plr)
                     CreateESP(plr)
                 else
-                    -- Обновляем цвет и текст при смене роли
                     local role = GetRole(plr)
                     local oc, fc = GetColors(role)
                     local isHero = false
@@ -986,7 +1029,8 @@ end)
 
 local gEspOn, gEspObj = false, {}
 local gEspT = NewToggle(VisualTab, L("espGun"), false, function(s)
-    gEspOn = s; OnSound(s)
+    gEspOn = s
+    OnSound(s)
     if not s then
         for _, o in pairs(gEspObj) do
             if o and o.Parent then o:Destroy() end
@@ -1026,11 +1070,15 @@ local fbT = NewToggle(VisualTab, L("fullbright"), false, function(s)
     OnSound(s)
     local l = game:GetService("Lighting")
     if s then
-        l.Ambient = Color3.fromRGB(255, 255, 255); l.Brightness = 2
-        l.FogEnd = 100000; l.GlobalShadows = false
+        l.Ambient = Color3.fromRGB(255, 255, 255)
+        l.Brightness = 2
+        l.FogEnd = 100000
+        l.GlobalShadows = false
     else
-        l.Ambient = Color3.fromRGB(70, 70, 70); l.Brightness = 1
-        l.FogEnd = 1000; l.GlobalShadows = true
+        l.Ambient = Color3.fromRGB(70, 70, 70)
+        l.Brightness = 1
+        l.FogEnd = 1000
+        l.GlobalShadows = true
     end
 end)
 RegLang(fbT, "fullbright")
@@ -1055,14 +1103,18 @@ AW.BackgroundTransparency = 0.15
 AW.BorderSizePixel = 0
 Instance.new("UICorner", AW).CornerRadius = UDim.new(0, 8)
 local AWS = Instance.new("UIStroke", AW)
-AWS.Color = THEME.Accent; AWS.Thickness = 1; AWS.Transparency = 0.85
+AWS.Color = THEME.Accent
+AWS.Thickness = 1
+AWS.Transparency = 0.85
 
 local AL = Instance.new("TextLabel", AW)
 AL.Size = UDim2.new(1, -110, 1, 0)
 AL.Position = UDim2.new(0, 10, 0, 0)
 AL.BackgroundTransparency = 1
-AL.Text = L("aimbot"); AL.TextColor3 = THEME.Text
-AL.Font = Enum.Font.GothamMedium; AL.TextSize = 12
+AL.Text = L("aimbot")
+AL.TextColor3 = THEME.Text
+AL.Font = Enum.Font.GothamMedium
+AL.TextSize = 12
 AL.TextXAlignment = Enum.TextXAlignment.Left
 RegLang(AL, "aimbot")
 
@@ -1084,8 +1136,12 @@ local Gear = Instance.new("TextButton", AW)
 Gear.Size = UDim2.new(0, 24, 0, 24)
 Gear.Position = UDim2.new(1, -38, 0.5, -12)
 Gear.BackgroundColor3 = THEME.ElementHover
-Gear.Text = "G"; Gear.TextColor3 = THEME.Text; Gear.TextSize = 14
-Gear.Font = Enum.Font.GothamBold; Gear.BorderSizePixel = 0; Gear.AutoButtonColor = false
+Gear.Text = "G"
+Gear.TextColor3 = THEME.Text
+Gear.TextSize = 14
+Gear.Font = Enum.Font.GothamBold
+Gear.BorderSizePixel = 0
+Gear.AutoButtonColor = false
 Instance.new("UICorner", Gear).CornerRadius = UDim.new(0, 6)
 
 local SP = Instance.new("Frame", VisualTab)
@@ -1096,21 +1152,31 @@ SP.BorderSizePixel = 0
 SP.ClipsDescendants = true
 Instance.new("UICorner", SP).CornerRadius = UDim.new(0, 8)
 local SPS = Instance.new("UIStroke", SP)
-SPS.Color = THEME.Accent; SPS.Thickness = 1; SPS.Transparency = 0.6
+SPS.Color = THEME.Accent
+SPS.Thickness = 1
+SPS.Transparency = 0.6
 local PL = Instance.new("UIListLayout", SP)
-PL.Padding = UDim.new(0, 5); PL.SortOrder = Enum.SortOrder.LayoutOrder
+PL.Padding = UDim.new(0, 5)
+PL.SortOrder = Enum.SortOrder.LayoutOrder
 local PP = Instance.new("UIPadding", SP)
-PP.PaddingTop = UDim.new(0, 8); PP.PaddingLeft = UDim.new(0, 8)
-PP.PaddingRight = UDim.new(0, 8); PP.PaddingBottom = UDim.new(0, 8)
+PP.PaddingTop = UDim.new(0, 8)
+PP.PaddingLeft = UDim.new(0, 8)
+PP.PaddingRight = UDim.new(0, 8)
+PP.PaddingBottom = UDim.new(0, 8)
 
-local wT = NewToggle(SP, L("aimWall"), false, function(s) AC.throughWalls = s; OnSound(s) end)
+local wT = NewToggle(SP, L("aimWall"), false, function(s)
+    AC.throughWalls = s
+    OnSound(s)
+end)
 RegLang(wT, "aimWall")
 
 local pL = Instance.new("TextLabel", SP)
 pL.Size = UDim2.new(1, 0, 0, 20)
 pL.BackgroundTransparency = 1
-pL.Text = "  " .. L("aimPart"); pL.TextColor3 = THEME.Gold
-pL.Font = Enum.Font.GothamBold; pL.TextSize = 11
+pL.Text = "  " .. L("aimPart")
+pL.TextColor3 = THEME.Gold
+pL.Font = Enum.Font.GothamBold
+pL.TextSize = 11
 pL.TextXAlignment = Enum.TextXAlignment.Left
 RegLang(pL, "aimPart")
 
@@ -1125,9 +1191,12 @@ local function PartBtn(name, key)
     local B = Instance.new("TextButton", pFrame)
     B.Size = UDim2.new(0.33, -3, 1, 0)
     B.BackgroundColor3 = AC.aimPart == name and THEME.Accent or THEME.Element
-    B.Text = L(key); B.TextColor3 = THEME.Text
-    B.Font = Enum.Font.GothamMedium; B.TextSize = 11
-    B.BorderSizePixel = 0; B.AutoButtonColor = false
+    B.Text = L(key)
+    B.TextColor3 = THEME.Text
+    B.Font = Enum.Font.GothamMedium
+    B.TextSize = 11
+    B.BorderSizePixel = 0
+    B.AutoButtonColor = false
     Instance.new("UICorner", B).CornerRadius = UDim.new(0, 6)
     B.MouseButton1Click:Connect(function()
         AC.aimPart = name
@@ -1139,6 +1208,7 @@ local function PartBtn(name, key)
         TweenService:Create(B, TweenInfo.new(0.15), {BackgroundColor3 = THEME.Accent}):Play()
     end)
 end
+
 PartBtn("Torso", "partTorso")
 PartBtn("Head", "partHead")
 PartBtn("HumanoidRootPart", "partHRP")
@@ -1148,26 +1218,31 @@ sL.Size = UDim2.new(1, 0, 0, 20)
 sL.BackgroundTransparency = 1
 sL.Text = "  " .. L("aimSmooth") .. ": 0.35"
 sL.TextColor3 = THEME.Gold
-sL.Font = Enum.Font.GothamBold; sL.TextSize = 11
+sL.Font = Enum.Font.GothamBold
+sL.TextSize = 11
 sL.TextXAlignment = Enum.TextXAlignment.Left
 RegLang(sL, "aimSmooth")
 
 local slBG = Instance.new("TextButton", SP)
 slBG.Size = UDim2.new(1, 0, 0, 14)
 slBG.BackgroundColor3 = THEME.Element
-slBG.Text = ""; slBG.BorderSizePixel = 0; slBG.AutoButtonColor = false
+slBG.Text = ""
+slBG.BorderSizePixel = 0
+slBG.AutoButtonColor = false
 Instance.new("UICorner", slBG).CornerRadius = UDim.new(1, 0)
 
 local slF = Instance.new("Frame", slBG)
 slF.Size = UDim2.new(AC.smoothness, 0, 1, 0)
-slF.BackgroundColor3 = THEME.Accent; slF.BorderSizePixel = 0
+slF.BackgroundColor3 = THEME.Accent
+slF.BorderSizePixel = 0
 Instance.new("UICorner", slF).CornerRadius = UDim.new(1, 0)
 
 local slD = Instance.new("Frame", slBG)
 slD.Size = UDim2.new(0, 16, 0, 16)
 slD.AnchorPoint = Vector2.new(0.5, 0.5)
 slD.Position = UDim2.new(AC.smoothness, 0, 0.5, 0)
-slD.BackgroundColor3 = THEME.Text; slD.BorderSizePixel = 0
+slD.BackgroundColor3 = THEME.Text
+slD.BorderSizePixel = 0
 Instance.new("UICorner", slD).CornerRadius = UDim.new(1, 0)
 
 local slDrag = false
@@ -1178,9 +1253,11 @@ local function UpdSl(input)
     slD.Position = UDim2.new(pos, 0, 0.5, 0)
     sL.Text = "  " .. L("aimSmooth") .. ": " .. string.format("%.2f", pos)
 end
+
 slBG.InputBegan:Connect(function(i)
     if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
-        slDrag = true; UpdSl(i)
+        slDrag = true
+        UpdSl(i)
     end
 end)
 UserInputService.InputChanged:Connect(function(i)
@@ -1265,7 +1342,7 @@ RunService.RenderStepped:Connect(function()
     mh.CFrame = mh.CFrame:Lerp(desired, a)
 end)
 
--- ROUND TIMER - стартует когда роли определились
+-- ROUND TIMER
 local tSec = NewSection(VisualTab, L("roundTimer"))
 local tl = tSec:FindFirstChild("SectionLabel")
 if tl then RegLang(tl, "roundTimer") end
@@ -1292,18 +1369,28 @@ TFrame.Visible = false
 TFrame.Active = true
 Instance.new("UICorner", TFrame).CornerRadius = UDim.new(0, 14)
 local TFS2 = Instance.new("UIStroke", TFrame)
-TFS2.Color = THEME.Accent; TFS2.Thickness = 2; TFS2.Transparency = 0.2
+TFS2.Color = THEME.Accent
+TFS2.Thickness = 2
+TFS2.Transparency = 0.2
 
 local TIcon = Instance.new("TextLabel", TFrame)
-TIcon.Size = UDim2.new(0, 40, 1, 0); TIcon.Position = UDim2.new(0, 6, 0, 0)
-TIcon.BackgroundTransparency = 1; TIcon.Text = "T"
-TIcon.TextColor3 = THEME.Text; TIcon.Font = Enum.Font.GothamBold; TIcon.TextSize = 24
+TIcon.Size = UDim2.new(0, 40, 1, 0)
+TIcon.Position = UDim2.new(0, 6, 0, 0)
+TIcon.BackgroundTransparency = 1
+TIcon.Text = "T"
+TIcon.TextColor3 = THEME.Text
+TIcon.Font = Enum.Font.GothamBold
+TIcon.TextSize = 24
 
 local TText = Instance.new("TextLabel", TFrame)
-TText.Size = UDim2.new(1, -50, 1, 0); TText.Position = UDim2.new(0, 48, 0, 0)
-TText.BackgroundTransparency = 1; TText.Text = L("waitingRoles")
-TText.TextColor3 = THEME.Text; TText.Font = Enum.Font.GothamBold
-TText.TextSize = 18; TText.TextXAlignment = Enum.TextXAlignment.Left
+TText.Size = UDim2.new(1, -50, 1, 0)
+TText.Position = UDim2.new(0, 48, 0, 0)
+TText.BackgroundTransparency = 1
+TText.Text = L("waitingRoles")
+TText.TextColor3 = THEME.Text
+TText.Font = Enum.Font.GothamBold
+TText.TextSize = 18
+TText.TextXAlignment = Enum.TextXAlignment.Left
 
 local TGr = Instance.new("UIGradient", TText)
 TGr.Color = ColorSequence.new({
@@ -1314,7 +1401,9 @@ TGr.Color = ColorSequence.new({
 local tDragStart, tStartPos, tMoved = nil, nil, false
 TFrame.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        tDragStart = input.Position; tStartPos = TFrame.Position; tMoved = false
+        tDragStart = input.Position
+        tStartPos = TFrame.Position
+        tMoved = false
     end
 end)
 UserInputService.InputChanged:Connect(function(input)
@@ -1328,21 +1417,21 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 UserInputService.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        tDragStart = nil; tStartPos = nil; tMoved = false
+        tDragStart = nil
+        tStartPos = nil
+        tMoved = false
     end
 end)
 
 local rtOn = false
 local rtThread = nil
 local rtLeft = 180
-local rtCounting = false
 
 local function FormatT(s)
     s = math.max(0, math.floor(s))
     return string.format("%02d:%02d", math.floor(s / 60), s % 60)
 end
 
--- Проверка что роли определились (есть хоть 1 мардер или шериф)
 local function RolesDetected()
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and plr.Character then
@@ -1357,22 +1446,15 @@ end
 
 local function StartRoundTimer()
     if rtThread then task.cancel(rtThread) end
-    rtCounting = false
     rtLeft = 180
     TText.Text = L("waitingRoles")
 
     rtThread = task.spawn(function()
-        -- Ждём пока роли определятся
         while rtOn and not RolesDetected() do
             task.wait(0.5)
         end
-
         if not rtOn then return end
-
-        -- Роли определились - начинаем счёт
-        rtCounting = true
         TText.Text = FormatT(rtLeft)
-
         while rtOn do
             task.wait(1)
             if rtLeft > 0 then
@@ -1387,7 +1469,6 @@ local function StartRoundTimer()
     end)
 end
 
--- Сброс таймера при респавне = новый раунд
 LocalPlayer.CharacterAdded:Connect(function()
     if rtOn then
         task.wait(3)
@@ -1396,7 +1477,8 @@ LocalPlayer.CharacterAdded:Connect(function()
 end)
 
 local rtT = NewToggle(VisualTab, L("roundTimer"), false, function(s)
-    rtOn = s; OnSound(s)
+    rtOn = s
+    OnSound(s)
     TFrame.Visible = s
     if s then StartRoundTimer()
     else
@@ -1444,7 +1526,6 @@ local trSec = NewSection(TrollTab, L("troll"))
 local trl = trSec:FindFirstChild("SectionLabel")
 if trl then RegLang(trl, "troll") end
 
--- Touch Fling
 local tfOn, tfConns, tfDeb = false, {}, {}
 
 local function FlingChar(tc)
@@ -1461,7 +1542,8 @@ local function FlingChar(tc)
     bv.Name = "BonnyFling"
     bv.Velocity = Vector3.new(math.random(-300, 300), 500, math.random(-300, 300))
     bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-    bv.P = 5000; bv.Parent = hrp
+    bv.P = 5000
+    bv.Parent = hrp
     game:GetService("Debris"):AddItem(bv, 0.4)
 end
 
@@ -1486,7 +1568,8 @@ local function SetupTF()
 end
 
 local tfT = NewToggle(TrollTab, L("touchFling"), false, function(s)
-    tfOn = s; OnSound(s)
+    tfOn = s
+    OnSound(s)
     if s then SetupTF()
     else
         for _, c in pairs(tfConns) do c:Disconnect() end
@@ -1500,14 +1583,13 @@ LocalPlayer.CharacterAdded:Connect(function()
     if tfOn then SetupTF() end
 end)
 
--- NEW: FLING PLAYER (выбор игрока из списка)
+-- FLING PLAYER
 local flingSection = NewSection(TrollTab, L("flingPlayer"))
 local flingLbl = flingSection:FindFirstChild("SectionLabel")
 if flingLbl then RegLang(flingLbl, "flingPlayer") end
 
 local selectedPlayer = nil
 
--- Дропдаун выбора игрока
 local dropdownBtn = Instance.new("TextButton", TrollTab)
 dropdownBtn.Size = UDim2.new(1, 0, 0, 32)
 dropdownBtn.BackgroundColor3 = THEME.Element
@@ -1521,7 +1603,9 @@ dropdownBtn.BorderSizePixel = 0
 dropdownBtn.AutoButtonColor = false
 Instance.new("UICorner", dropdownBtn).CornerRadius = UDim.new(0, 8)
 local ddS = Instance.new("UIStroke", dropdownBtn)
-ddS.Color = THEME.Accent; ddS.Thickness = 1; ddS.Transparency = 0.85
+ddS.Color = THEME.Accent
+ddS.Thickness = 1
+ddS.Transparency = 0.85
 
 local ddList = Instance.new("Frame", TrollTab)
 ddList.Size = UDim2.new(1, 0, 0, 0)
@@ -1531,7 +1615,9 @@ ddList.BorderSizePixel = 0
 ddList.ClipsDescendants = true
 Instance.new("UICorner", ddList).CornerRadius = UDim.new(0, 8)
 local ddLS = Instance.new("UIStroke", ddList)
-ddLS.Color = THEME.Accent; ddLS.Thickness = 1; ddLS.Transparency = 0.6
+ddLS.Color = THEME.Accent
+ddLS.Thickness = 1
+ddLS.Transparency = 0.6
 
 local ddScroll = Instance.new("ScrollingFrame", ddList)
 ddScroll.Size = UDim2.new(1, -10, 1, -10)
@@ -1548,8 +1634,8 @@ ddLayout.Padding = UDim.new(0, 4)
 ddLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 local ddOpen = false
+
 local function UpdateDropdown()
-    -- Очищаем список
     for _, c in pairs(ddScroll:GetChildren()) do
         if c:IsA("TextButton") then c:Destroy() end
     end
@@ -1610,7 +1696,6 @@ dropdownBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Кнопка FLING
 local flingBtn = Instance.new("TextButton", TrollTab)
 flingBtn.Size = UDim2.new(1, 0, 0, 36)
 flingBtn.BackgroundColor3 = Color3.fromRGB(200, 20, 50)
@@ -1623,7 +1708,9 @@ flingBtn.BorderSizePixel = 0
 flingBtn.AutoButtonColor = false
 Instance.new("UICorner", flingBtn).CornerRadius = UDim.new(0, 8)
 local fbS = Instance.new("UIStroke", flingBtn)
-fbS.Color = Color3.fromRGB(255, 80, 80); fbS.Thickness = 2; fbS.Transparency = 0.3
+fbS.Color = Color3.fromRGB(255, 80, 80)
+fbS.Thickness = 2
+fbS.Transparency = 0.3
 
 flingBtn.MouseEnter:Connect(function()
     TweenService:Create(flingBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(230, 30, 60)}):Play()
@@ -1657,13 +1744,11 @@ flingBtn.MouseButton1Click:Connect(function()
 
     OnSound(true)
 
-    -- Телепорт к цели
     local targetHRP = target:FindFirstChild("HumanoidRootPart")
     myChar.HumanoidRootPart.CFrame = targetHRP.CFrame + Vector3.new(0, 0, 3)
 
     task.wait(0.15)
 
-    -- Создаём BodyVelocity который откидывает ЦЕЛЬ (не нас)
     local bv = Instance.new("BodyVelocity")
     bv.Name = "BonnyMassFling"
     bv.Velocity = Vector3.new(
@@ -1694,17 +1779,16 @@ lgL.TextSize = 12
 lgL.TextXAlignment = Enum.TextXAlignment.Left
 RegLang(lgL, "language")
 
--- Языки - подсветка активного
 local langBtns = {}
+
 local function UpdateLangBtns()
     for name, b in pairs(langBtns) do
+        local s = b:FindFirstChildOfClass("UIStroke")
         if name == Lang.current then
             TweenService:Create(b, TweenInfo.new(0.15), {BackgroundColor3 = THEME.Accent, BackgroundTransparency = 0.3}):Play()
-            local s = b:FindFirstChildOfClass("UIStroke")
             if s then TweenService:Create(s, TweenInfo.new(0.15), {Thickness = 2, Transparency = 0}):Play() end
         else
             TweenService:Create(b, TweenInfo.new(0.15), {BackgroundColor3 = THEME.Element, BackgroundTransparency = 0.15}):Play()
-            local s = b:FindFirstChildOfClass("UIStroke")
             if s then TweenService:Create(s, TweenInfo.new(0.15), {Thickness = 1, Transparency = 0.85}):Play() end
         end
     end
@@ -1735,15 +1819,15 @@ clL.TextXAlignment = Enum.TextXAlignment.Left
 RegLang(clL, "clickSound")
 
 local clBtns = {}
+
 local function UpdClBtns()
     for i, b in pairs(clBtns) do
+        local s = b:FindFirstChildOfClass("UIStroke")
         if i == SoundConfig.click then
             TweenService:Create(b, TweenInfo.new(0.15), {BackgroundColor3 = THEME.Accent, BackgroundTransparency = 0.3}):Play()
-            local s = b:FindFirstChildOfClass("UIStroke")
             if s then TweenService:Create(s, TweenInfo.new(0.15), {Thickness = 2, Transparency = 0}):Play() end
         else
             TweenService:Create(b, TweenInfo.new(0.15), {BackgroundColor3 = THEME.Element, BackgroundTransparency = 0.15}):Play()
-            local s = b:FindFirstChildOfClass("UIStroke")
             if s then TweenService:Create(s, TweenInfo.new(0.15), {Thickness = 1, Transparency = 0.85}):Play() end
         end
     end
@@ -1774,15 +1858,15 @@ dsL.TextXAlignment = Enum.TextXAlignment.Left
 RegLang(dsL, "disSound")
 
 local dsBtns = {}
+
 local function UpdDsBtns()
     for i, b in pairs(dsBtns) do
+        local s = b:FindFirstChildOfClass("UIStroke")
         if i == SoundConfig.disable then
             TweenService:Create(b, TweenInfo.new(0.15), {BackgroundColor3 = THEME.Accent, BackgroundTransparency = 0.3}):Play()
-            local s = b:FindFirstChildOfClass("UIStroke")
             if s then TweenService:Create(s, TweenInfo.new(0.15), {Thickness = 2, Transparency = 0}):Play() end
         else
             TweenService:Create(b, TweenInfo.new(0.15), {BackgroundColor3 = THEME.Element, BackgroundTransparency = 0.15}):Play()
-            local s = b:FindFirstChildOfClass("UIStroke")
             if s then TweenService:Create(s, TweenInfo.new(0.15), {Thickness = 1, Transparency = 0.85}):Play() end
         end
     end
@@ -1801,12 +1885,19 @@ DsBtn("1. " .. L("noSound") .. " (default)", 0)
 DsBtn("2. " .. L("disSound"), 1)
 
 -- LAUNCH
-for _, b in pairs(TabsBtns) do b.MouseButton1Click:Fire() break end
+for _, b in pairs(TabsBtns) do
+    b.MouseButton1Click:Fire()
+    break
+end
 
 UpdateLangBtns()
 UpdClBtns()
 UpdDsBtns()
 
-StarterGui:SetCore("SendNotification", {Title = "Bonny Hub", Text = L("loaded"), Duration = 3})
+StarterGui:SetCore("SendNotification", {
+    Title = "Bonny Hub",
+    Text = L("loaded"),
+    Duration = 3
+})
 
 print("[Bonny Hub] Loaded successfully!")
