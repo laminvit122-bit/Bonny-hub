@@ -41,7 +41,7 @@ local Lang = {
             chatCopied = "Copied! Paste in chat",
             visual = "Visual Features",
             esp = "ESP Players",
-            espGun = "ESP Guns (Orange)",
+            espGun = "ESP Guns",
             fullbright = "Fullbright",
             removeFog = "Remove Fog",
             roundTimer = "Round Timer",
@@ -59,6 +59,7 @@ local Lang = {
             tpSpawn = "Teleport to Spawn",
             troll = "Troll Features",
             touchFling = "Touch Fling",
+            skullTexture = "Skull Texture",
             settings = "Settings",
             language = "Language",
             clickSound = "Click Sound",
@@ -97,6 +98,7 @@ local Lang = {
             tpSpawn = "ТП на спавн",
             troll = "Тролль функции",
             touchFling = "Тач-флинг",
+            skullTexture = "Текстура черепа",
             settings = "Настройки",
             language = "Язык",
             clickSound = "Звук клика",
@@ -126,7 +128,7 @@ local function ApplyLang()
         pcall(function()
             if entry.ref and entry.ref.Parent then
                 if entry.ref.Name == "SectionLabel" then
-                    entry.ref.Text = "  ⚡  " .. L(entry.key)
+                    entry.ref.Text = "  " .. L(entry.key)
                 else
                     entry.ref.Text = "  " .. entry.pfx .. L(entry.key)
                 end
@@ -178,6 +180,8 @@ for _, id in pairs(DIS_SOUND) do
     end
 end
 
+task.wait(0.3)
+
 local function PlayClick()
     local id = SOUND_IDS[SoundConfig.click]
     if not id then return end
@@ -193,13 +197,13 @@ end
 local function PlayDisable()
     local id = DIS_SOUND[SoundConfig.disable]
     if not id then return end
-    local s = soundCache[id]
-    if s then
-        s.TimePosition = 0
-        s:Play()
-    else
-        PreloadSound(id):Play()
-    end
+
+    local s = Instance.new("Sound")
+    s.SoundId = id
+    s.Volume = 1.5
+    s.Parent = SoundService
+    s:Play()
+    game:GetService("Debris"):AddItem(s, 5)
 end
 
 local function OnSound(state)
@@ -252,12 +256,17 @@ local function GetRole(plr)
     local hk = false
 
     local function scan(c)
+        if not c then return end
         for _, i in pairs(c:GetChildren()) do
-            if IsGun(i) then
-                hg = true
-            end
-            if IsKnife(i) then
-                hk = true
+            if i:IsA("Tool") then
+                local n = i.Name:lower()
+                if n:find("gun") or n:find("revolver") or n:find("pistol") then
+                    hg = true
+                end
+                if n:find("knife") or n:find("sword") or n:find("m9")
+                or n:find("dagger") or n:find("blade") then
+                    hk = true
+                end
             end
         end
     end
@@ -381,7 +390,7 @@ LS.Transparency = 0.3
 local Logo = Instance.new("TextLabel", LF)
 Logo.Size = UDim2.new(1, 0, 1, 0)
 Logo.BackgroundTransparency = 1
-Logo.Text = "★"
+Logo.Text = "*"
 Logo.TextColor3 = THEME.Text
 Logo.Font = Enum.Font.GothamBold
 Logo.TextSize = 19
@@ -446,7 +455,7 @@ end
 
 local miniBtn
 
-TBtn("−", -74, THEME.TextDim, function()
+TBtn("-", -74, THEME.TextDim, function()
     local closeTween = TweenService:Create(
         MainFrame,
         TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
@@ -470,7 +479,7 @@ TBtn("−", -74, THEME.TextDim, function()
     M.Size = UDim2.new(0, 0, 0, 0)
     M.Position = UDim2.new(0, 100, 0.5, -30)
     M.BackgroundColor3 = THEME.Background
-    M.Text = "★"
+    M.Text = "*"
     M.TextColor3 = THEME.Text
     M.TextScaled = true
     M.Font = Enum.Font.GothamBold
@@ -583,7 +592,7 @@ TBtn("−", -74, THEME.TextDim, function()
     miniBtn = M
 end)
 
-TBtn("×", -42, Color3.fromRGB(255, 80, 80), function()
+TBtn("x", -42, Color3.fromRGB(255, 80, 80), function()
     local t = TweenService:Create(
         MainFrame,
         TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
@@ -619,7 +628,7 @@ VL.Size = UDim2.new(1, -20, 0, 26)
 VL.Position = UDim2.new(0, 10, 0, 10)
 VL.BackgroundColor3 = THEME.Element
 VL.BackgroundTransparency = 0.2
-VL.Text = "⚡ BONNY"
+VL.Text = "BONNY"
 VL.TextColor3 = THEME.Gold
 VL.Font = Enum.Font.GothamBold
 VL.TextSize = 11
@@ -745,12 +754,20 @@ end)
 local Tabs = {}
 local TabsBtns = {}
 
-local function NewTab(name, icon)
+local TAB_ICONS = {
+    Main = "rbxassetid://7539983780",
+    Visual = "rbxassetid://10709791942",
+    Teleports = "rbxassetid://10709791706",
+    Troll = "rbxassetid://10653372160",
+    Settings = "rbxassetid://10734950023"
+}
+
+local function NewTab(name, iconId)
     local B = Instance.new("TextButton", TLF)
     B.Size = UDim2.new(1, 0, 0, 32)
     B.BackgroundColor3 = THEME.Element
     B.BackgroundTransparency = 0.4
-    B.Text = "  " .. icon .. "   " .. name
+    B.Text = ""
     B.TextColor3 = THEME.TextDim
     B.Font = Enum.Font.GothamMedium
     B.TextSize = 13
@@ -760,6 +777,27 @@ local function NewTab(name, icon)
 
     local BC = Instance.new("UICorner", B)
     BC.CornerRadius = UDim.new(0, 8)
+
+    if iconId then
+        local ico = Instance.new("ImageLabel", B)
+        ico.Size = UDim2.new(0, 18, 0, 18)
+        ico.Position = UDim2.new(0, 8, 0.5, -9)
+        ico.BackgroundTransparency = 1
+        ico.Image = iconId
+        ico.ImageColor3 = THEME.TextDim
+        ico.Name = "Icon"
+    end
+
+    local txt = Instance.new("TextLabel", B)
+    txt.Size = UDim2.new(1, -36, 1, 0)
+    txt.Position = UDim2.new(0, 32, 0, 0)
+    txt.BackgroundTransparency = 1
+    txt.Text = name
+    txt.TextColor3 = THEME.TextDim
+    txt.Font = Enum.Font.GothamMedium
+    txt.TextSize = 13
+    txt.TextXAlignment = Enum.TextXAlignment.Left
+    txt.Name = "Label"
 
     local St = Instance.new("Frame", B)
     St.Name = "Stripe"
@@ -798,8 +836,10 @@ local function NewTab(name, icon)
         for _, btn in pairs(TabsBtns) do
             btn.BackgroundColor3 = THEME.Element
             btn.BackgroundTransparency = 0.4
-            btn.TextColor3 = THEME.TextDim
-
+            local lbl = btn:FindFirstChild("Label")
+            if lbl then lbl.TextColor3 = THEME.TextDim end
+            local ico = btn:FindFirstChild("Icon")
+            if ico then ico.ImageColor3 = THEME.TextDim end
             local s = btn:FindFirstChild("Stripe")
             if s then s.Visible = false end
         end
@@ -807,12 +847,13 @@ local function NewTab(name, icon)
         TC.Visible = true
         B.BackgroundColor3 = THEME.Accent
         B.BackgroundTransparency = 0.15
-        B.TextColor3 = THEME.Text
 
+        local lbl = B:FindFirstChild("Label")
+        if lbl then lbl.TextColor3 = THEME.Text end
+        local ico = B:FindFirstChild("Icon")
+        if ico then ico.ImageColor3 = THEME.Text end
         local s = B:FindFirstChild("Stripe")
         if s then s.Visible = true end
-
-        PlayClick()
     end)
 
     B.MouseEnter:Connect(function()
@@ -852,7 +893,7 @@ local function NewSection(parent, text)
     S.Position = UDim2.new(0, 8, 0, 0)
     S.BackgroundColor3 = THEME.Sidebar
     S.BackgroundTransparency = 0.1
-    S.Text = "  ⚡  " .. text
+    S.Text = "  " .. text
     S.TextColor3 = THEME.Gold
     S.Font = Enum.Font.GothamBold
     S.TextSize = 12
@@ -909,8 +950,8 @@ local function NewToggle(parent, text, def, cb)
 
     local F = Instance.new("TextButton", parent)
     F.Size = UDim2.new(1, 0, 0, 32)
-    F.BackgroundColor3 = THEME.Element
-    F.BackgroundTransparency = 0.15
+    F.BackgroundColor3 = state and THEME.Accent or THEME.Element
+    F.BackgroundTransparency = state and 0.6 or 0.15
     F.Text = "  " .. text
     F.TextColor3 = THEME.Text
     F.Font = Enum.Font.GothamMedium
@@ -924,8 +965,8 @@ local function NewToggle(parent, text, def, cb)
 
     local S = Instance.new("UIStroke", F)
     S.Color = THEME.Accent
-    S.Thickness = 1
-    S.Transparency = 0.85
+    S.Thickness = state and 2 or 1
+    S.Transparency = state and 0 or 0.85
 
     local SB2 = Instance.new("Frame", F)
     SB2.Size = UDim2.new(0, 36, 0, 18)
@@ -956,32 +997,47 @@ local function NewToggle(parent, text, def, cb)
             Position = state and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
         }):Play()
 
+        TweenService:Create(F, TweenInfo.new(0.2), {
+            BackgroundColor3 = state and THEME.Accent or THEME.Element,
+            BackgroundTransparency = state and 0.6 or 0.15
+        }):Play()
+
+        TweenService:Create(S, TweenInfo.new(0.2), {
+            Thickness = state and 2 or 1,
+            Transparency = state and 0 or 0.85
+        }):Play()
+
         if cb then cb(state) end
     end)
 
     F.MouseEnter:Connect(function()
-        TweenService:Create(F, TweenInfo.new(0.15), {
-            BackgroundColor3 = THEME.ElementHover,
-            BackgroundTransparency = 0
-        }):Play()
+        if not state then
+            TweenService:Create(F, TweenInfo.new(0.15), {
+                BackgroundColor3 = THEME.ElementHover,
+                BackgroundTransparency = 0
+            }):Play()
+        end
     end)
 
     F.MouseLeave:Connect(function()
-        TweenService:Create(F, TweenInfo.new(0.15), {
-            BackgroundColor3 = THEME.Element,
-            BackgroundTransparency = 0.15
-        }):Play()
+        if not state then
+            TweenService:Create(F, TweenInfo.new(0.15), {
+                BackgroundColor3 = THEME.Element,
+                BackgroundTransparency = 0.15
+            }):Play()
+        end
     end)
 
     return F
 end
 
-local MainTab = NewTab("Main", "🏠")
-local VisualTab = NewTab("Visual", "👁")
-local TeleportsTab = NewTab("Teleports", "📍")
-local TrollTab = NewTab("Troll", "☠")
-local SettingsTab = NewTab("Settings", "⚙")
+local MainTab = NewTab("Main", TAB_ICONS.Main)
+local VisualTab = NewTab("Visual", TAB_ICONS.Visual)
+local TeleportsTab = NewTab("Teleports", TAB_ICONS.Teleports)
+local TrollTab = NewTab("Troll", TAB_ICONS.Troll)
+local SettingsTab = NewTab("Settings", TAB_ICONS.Settings)
 
+-- MAIN
 local mSec = NewSection(MainTab, L("main"))
 local ml = mSec:FindFirstChild("SectionLabel")
 if ml then RegLang(ml, "main") end
@@ -1006,12 +1062,12 @@ local function StartNoclip()
     end)
 end
 
-local ncT = NewToggle(MainTab, "👻  " .. L("noclip"), false, function(s)
+local ncT = NewToggle(MainTab, L("noclip"), false, function(s)
     noclipOn = s
     OnSound(s)
     if s then StartNoclip() end
 end)
-RegLang(ncT, "noclip", "👻  ")
+RegLang(ncT, "noclip")
 
 LocalPlayer.CharacterAdded:Connect(function()
     task.wait(1)
@@ -1078,20 +1134,18 @@ local function APLoop()
     end)
 end
 
-local apT = NewToggle(MainTab, "🔫  " .. L("autoPickup"), false, function(s)
+local apT = NewToggle(MainTab, L("autoPickup"), false, function(s)
     apOn = s
     OnSound(s)
     if s then APLoop() end
 end)
-RegLang(apT, "autoPickup", "🔫  ")
+RegLang(apT, "autoPickup")
 
 local chSec = NewSection(MainTab, L("chatInfo"))
 local chl = chSec:FindFirstChild("SectionLabel")
 if chl then RegLang(chl, "chatInfo") end
 
-local chBtn = NewButton(MainTab, "💬  " .. L("chatRoles"), function()
-    PlayClick()
-
+local chBtn = NewButton(MainTab, L("chatRoles"), function()
     local msg = ""
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and plr.Character then
@@ -1115,8 +1169,9 @@ local chBtn = NewButton(MainTab, "💬  " .. L("chatRoles"), function()
         Duration = 4
     })
 end)
-RegLang(chBtn, "chatRoles", "💬  ")
+RegLang(chBtn, "chatRoles")
 
+-- VISUAL
 local vSec = NewSection(VisualTab, L("visual"))
 local vl = vSec:FindFirstChild("SectionLabel")
 if vl then RegLang(vl, "visual") end
@@ -1124,7 +1179,7 @@ if vl then RegLang(vl, "visual") end
 local espOn = false
 local espObj = {}
 
-local espT = NewToggle(VisualTab, "👁️  " .. L("esp"), false, function(s)
+local espT = NewToggle(VisualTab, L("esp"), false, function(s)
     espOn = s
     OnSound(s)
 
@@ -1136,7 +1191,7 @@ local espT = NewToggle(VisualTab, "👁️  " .. L("esp"), false, function(s)
         espObj = {}
     end
 end)
-RegLang(espT, "esp", "👁️  ")
+RegLang(espT, "esp")
 
 local function CreateESP(plr)
     if plr == LocalPlayer or not plr.Character then return end
@@ -1186,7 +1241,7 @@ local function CreateESP(plr)
     lbl.Font = Enum.Font.GothamBold
     lbl.TextSize = 13
 
-    espObj[plr] = {hl = hl, tag = tag}
+    espObj[plr] = {hl = hl, tag = tag, char = plr.Character}
 end
 
 local function RemoveESP(plr)
@@ -1199,14 +1254,40 @@ local function RemoveESP(plr)
     espObj[plr] = nil
 end
 
+local function HookRespawn(plr)
+    if plr == LocalPlayer then return end
+    plr.CharacterAdded:Connect(function(newChar)
+        RemoveESP(plr)
+        if espOn then
+            task.wait(0.5)
+            if plr.Character and plr.Character.Parent and plr.Character:FindFirstChild("Head") then
+                CreateESP(plr)
+            end
+        end
+    end)
+end
+
+for _, plr in pairs(Players:GetPlayers()) do
+    HookRespawn(plr)
+end
+
+Players.PlayerAdded:Connect(function(plr)
+    HookRespawn(plr)
+end)
+
 RunService.RenderStepped:Connect(function()
     if not espOn then return end
 
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer then
+            local d = espObj[plr]
+
             if plr.Character and plr.Character:FindFirstChild("Head") then
-                local d = espObj[plr]
-                if not d or not d.hl or not d.hl.Parent or d.hl.Adornee ~= plr.Character then
+                if not d
+                or not d.hl
+                or not d.hl.Parent
+                or d.char ~= plr.Character
+                or d.hl.Adornee ~= plr.Character then
                     RemoveESP(plr)
                     CreateESP(plr)
                 end
@@ -1228,7 +1309,7 @@ Players.PlayerRemoving:Connect(RemoveESP)
 local gEspOn = false
 local gEspObj = {}
 
-local gEspT = NewToggle(VisualTab, "🔶  " .. L("espGun"), false, function(s)
+local gEspT = NewToggle(VisualTab, L("espGun"), false, function(s)
     gEspOn = s
     OnSound(s)
 
@@ -1239,7 +1320,7 @@ local gEspT = NewToggle(VisualTab, "🔶  " .. L("espGun"), false, function(s)
         gEspObj = {}
     end
 end)
-RegLang(gEspT, "espGun", "🔶  ")
+RegLang(gEspT, "espGun")
 
 task.spawn(function()
     while true do
@@ -1271,7 +1352,7 @@ task.spawn(function()
     end
 end)
 
-local fbT = NewToggle(VisualTab, "💡  " .. L("fullbright"), false, function(s)
+local fbT = NewToggle(VisualTab, L("fullbright"), false, function(s)
     OnSound(s)
     local l = game:GetService("Lighting")
 
@@ -1287,14 +1368,15 @@ local fbT = NewToggle(VisualTab, "💡  " .. L("fullbright"), false, function(s)
         l.GlobalShadows = true
     end
 end)
-RegLang(fbT, "fullbright", "💡  ")
+RegLang(fbT, "fullbright")
 
-local fogT = NewToggle(VisualTab, "🌫️  " .. L("removeFog"), false, function(s)
+local fogT = NewToggle(VisualTab, L("removeFog"), false, function(s)
     OnSound(s)
     game:GetService("Lighting").FogEnd = s and 100000 or 1000
 end)
-RegLang(fogT, "removeFog", "🌫️  ")
+RegLang(fogT, "removeFog")
 
+-- AIMBOT
 local aSec = NewSection(VisualTab, L("aimbot"))
 local al = aSec:FindFirstChild("SectionLabel")
 if al then RegLang(al, "aimbot") end
@@ -1353,7 +1435,7 @@ local Gear = Instance.new("TextButton", AW)
 Gear.Size = UDim2.new(0, 24, 0, 24)
 Gear.Position = UDim2.new(1, -38, 0.5, -12)
 Gear.BackgroundColor3 = THEME.ElementHover
-Gear.Text = "⚙"
+Gear.Text = "G"
 Gear.TextColor3 = THEME.Text
 Gear.TextSize = 14
 Gear.Font = Enum.Font.GothamBold
@@ -1388,21 +1470,21 @@ PP.PaddingLeft = UDim.new(0, 8)
 PP.PaddingRight = UDim.new(0, 8)
 PP.PaddingBottom = UDim.new(0, 8)
 
-local wT = NewToggle(SP, "🚪  " .. L("aimWall"), false, function(s)
+local wT = NewToggle(SP, L("aimWall"), false, function(s)
     AC.throughWalls = s
     OnSound(s)
 end)
-RegLang(wT, "aimWall", "🚪  ")
+RegLang(wT, "aimWall")
 
 local pL = Instance.new("TextLabel", SP)
 pL.Size = UDim2.new(1, 0, 0, 20)
 pL.BackgroundTransparency = 1
-pL.Text = "  🎯  " .. L("aimPart")
+pL.Text = "  " .. L("aimPart")
 pL.TextColor3 = THEME.Gold
 pL.Font = Enum.Font.GothamBold
 pL.TextSize = 11
 pL.TextXAlignment = Enum.TextXAlignment.Left
-RegLang(pL, "aimPart", "🎯  ")
+RegLang(pL, "aimPart")
 
 local pFrame = Instance.new("Frame", SP)
 pFrame.Size = UDim2.new(1, 0, 0, 30)
@@ -1428,7 +1510,6 @@ local function PartBtn(name, key)
 
     B.MouseButton1Click:Connect(function()
         AC.aimPart = name
-        PlayClick()
 
         for _, c in pairs(pFrame:GetChildren()) do
             if c:IsA("TextButton") then
@@ -1451,12 +1532,12 @@ PartBtn("HumanoidRootPart", "partHRP")
 local sL = Instance.new("TextLabel", SP)
 sL.Size = UDim2.new(1, 0, 0, 20)
 sL.BackgroundTransparency = 1
-sL.Text = "  🎚️  " .. L("aimSmooth") .. ": 0.35"
+sL.Text = "  " .. L("aimSmooth") .. ": 0.35"
 sL.TextColor3 = THEME.Gold
 sL.Font = Enum.Font.GothamBold
 sL.TextSize = 11
 sL.TextXAlignment = Enum.TextXAlignment.Left
-RegLang(sL, "aimSmooth", "🎚️  ")
+RegLang(sL, "aimSmooth")
 
 local slBG = Instance.new("TextButton", SP)
 slBG.Size = UDim2.new(1, 0, 0, 14)
@@ -1493,7 +1574,7 @@ local function UpdSl(input)
     AC.smoothness = pos
     slF.Size = UDim2.new(pos, 0, 1, 0)
     slD.Position = UDim2.new(pos, 0, 0.5, 0)
-    sL.Text = "  🎚️  " .. L("aimSmooth") .. ": " .. string.format("%.2f", pos)
+    sL.Text = "  " .. L("aimSmooth") .. ": " .. string.format("%.2f", pos)
 end
 
 slBG.InputBegan:Connect(function(i)
@@ -1519,7 +1600,6 @@ local sOpen = false
 
 Gear.MouseButton1Click:Connect(function()
     sOpen = not sOpen
-    PlayClick()
 
     if sOpen then
         SP.Visible = true
@@ -1551,13 +1631,25 @@ SWB.InputBegan:Connect(function(i)
         TweenService:Create(Ci2, TweenInfo.new(0.2), {
             Position = AC.enabled and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
         }):Play()
+
+        TweenService:Create(AW, TweenInfo.new(0.2), {
+            BackgroundColor3 = AC.enabled and THEME.Accent or THEME.Element,
+            BackgroundTransparency = AC.enabled and 0.6 or 0.15
+        }):Play()
+
+        TweenService:Create(AWS, TweenInfo.new(0.2), {
+            Thickness = AC.enabled and 2 or 1,
+            Transparency = AC.enabled and 0 or 0.85
+        }):Play()
     end
 end)
 
 local function GetMurdererChar()
     for _, plr in pairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and plr.Character and GetRole(plr) == "Murderer" then
-            return plr.Character
+        if plr ~= LocalPlayer and plr.Character then
+            if GetRole(plr) == "Murderer" then
+                return plr.Character
+            end
         end
     end
     return nil
@@ -1569,7 +1661,9 @@ local function GetAP(char)
         return char:FindFirstChild("Head")
     end
     if AC.aimPart == "Torso" then
-        return char:FindFirstChild("UpperTorso") or char:FindFirstChild("Torso") or char:FindFirstChild("HumanoidRootPart")
+        return char:FindFirstChild("UpperTorso")
+            or char:FindFirstChild("Torso")
+            or char:FindFirstChild("HumanoidRootPart")
     end
     return char:FindFirstChild("HumanoidRootPart")
 end
@@ -1593,6 +1687,7 @@ RunService.RenderStepped:Connect(function()
         local rp = RaycastParams.new()
         rp.FilterType = Enum.RaycastFilterType.Exclude
         rp.FilterDescendantsInstances = {mc, t}
+        rp.IgnoreWater = true
 
         local r = workspace:Raycast(mh.Position, (tp.Position - mh.Position), rp)
         if r then return end
@@ -1604,6 +1699,7 @@ RunService.RenderStepped:Connect(function()
     mh.CFrame = mh.CFrame:Lerp(desired, a)
 end)
 
+-- ROUND TIMER
 local tSec = NewSection(VisualTab, L("roundTimer"))
 local tl = tSec:FindFirstChild("SectionLabel")
 if tl then RegLang(tl, "roundTimer") end
@@ -1649,7 +1745,7 @@ local TIcon = Instance.new("TextLabel", TFrame)
 TIcon.Size = UDim2.new(0, 40, 1, 0)
 TIcon.Position = UDim2.new(0, 6, 0, 0)
 TIcon.BackgroundTransparency = 1
-TIcon.Text = "⏱️"
+TIcon.Text = "T"
 TIcon.TextColor3 = THEME.Text
 TIcon.Font = Enum.Font.GothamBold
 TIcon.TextSize = 24
@@ -1760,7 +1856,7 @@ LocalPlayer.CharacterAdded:Connect(function()
     end
 end)
 
-local rtT = NewToggle(VisualTab, "⏱️  " .. L("roundTimer"), false, function(s)
+local rtT = NewToggle(VisualTab, L("roundTimer"), false, function(s)
     rtOn = s
     OnSound(s)
     TFrame.Visible = s
@@ -1774,8 +1870,9 @@ local rtT = NewToggle(VisualTab, "⏱️  " .. L("roundTimer"), false, function(
         end
     end
 end)
-RegLang(rtT, "roundTimer", "⏱️  ")
+RegLang(rtT, "roundTimer")
 
+-- TELEPORTS
 local tpSec = NewSection(TeleportsTab, L("teleports"))
 local tpl = tpSec:FindFirstChild("SectionLabel")
 if tpl then RegLang(tpl, "teleports") end
@@ -1806,34 +1903,32 @@ local function TPSpawn()
     ch.HumanoidRootPart.CFrame = CFrame.new(SPAWN + Vector3.new(0, 3, 0))
 end
 
-local tpM = NewButton(TeleportsTab, "🔴  " .. L("tpMurderer"), function()
-    PlayClick()
+local tpM = NewButton(TeleportsTab, L("tpMurderer"), function()
     TPPlr("Murderer")
 end)
-RegLang(tpM, "tpMurderer", "🔴  ")
+RegLang(tpM, "tpMurderer")
 
-local tpS = NewButton(TeleportsTab, "🔵  " .. L("tpSheriff"), function()
-    PlayClick()
+local tpS = NewButton(TeleportsTab, L("tpSheriff"), function()
     TPPlr("Sheriff")
 end)
-RegLang(tpS, "tpSheriff", "🔵  ")
+RegLang(tpS, "tpSheriff")
 
-local tpMp = NewButton(TeleportsTab, "🗺️  " .. L("tpMap"), function()
-    PlayClick()
+local tpMp = NewButton(TeleportsTab, L("tpMap"), function()
     TPSpawn()
 end)
-RegLang(tpMp, "tpMap", "🗺️  ")
+RegLang(tpMp, "tpMap")
 
-local tpSp = NewButton(TeleportsTab, "🏠  " .. L("tpSpawn"), function()
-    PlayClick()
+local tpSp = NewButton(TeleportsTab, L("tpSpawn"), function()
     TPSpawn()
 end)
-RegLang(tpSp, "tpSpawn", "🏠  ")
+RegLang(tpSp, "tpSpawn")
 
+-- TROLL
 local trSec = NewSection(TrollTab, L("troll"))
 local trl = trSec:FindFirstChild("SectionLabel")
 if trl then RegLang(trl, "troll") end
 
+-- Touch Fling
 local tfOn = false
 local tfConns = {}
 local tfDeb = {}
@@ -1892,7 +1987,7 @@ local function SetupTF()
     end
 end
 
-local tfT = NewToggle(TrollTab, "✋  " .. L("touchFling"), false, function(s)
+local tfT = NewToggle(TrollTab, L("touchFling"), false, function(s)
     tfOn = s
     OnSound(s)
 
@@ -1905,7 +2000,7 @@ local tfT = NewToggle(TrollTab, "✋  " .. L("touchFling"), false, function(s)
         tfConns = {}
     end
 end)
-RegLang(tfT, "touchFling", "✋  ")
+RegLang(tfT, "touchFling")
 
 LocalPlayer.CharacterAdded:Connect(function()
     task.wait(1)
@@ -1914,6 +2009,86 @@ LocalPlayer.CharacterAdded:Connect(function()
     end
 end)
 
+-- SKULL TEXTURE
+local skullOn = false
+local skullTextures = {}
+
+local SKULL_IMAGE = "rbxassetid://10653372160"
+local SKULL_TEXTURE = "rbxassetid://10653372143"
+
+local function ApplySkull()
+    local ch = LocalPlayer.Character
+    if not ch then return end
+
+    for _, part in pairs(ch:GetDescendants()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            skullTextures[part] = {
+                texture = part.TextureID or "",
+                color = part.Color or Color3.new(1,1,1)
+            }
+
+            pcall(function()
+                part.TextureID = SKULL_TEXTURE
+            end)
+
+            part.Color = Color3.fromRGB(255, 255, 255)
+        end
+    end
+
+    local head = ch:FindFirstChild("Head")
+    if head and not head:FindFirstChild("BonnySkullDecal") then
+        local dec = Instance.new("Decal")
+        dec.Name = "BonnySkullDecal"
+        dec.Face = Enum.NormalId.Front
+        dec.Texture = SKULL_IMAGE
+        dec.Parent = head
+    end
+end
+
+local function RemoveSkull()
+    local ch = LocalPlayer.Character
+    if not ch then return end
+
+    for part, data in pairs(skullTextures) do
+        if part and part.Parent then
+            pcall(function()
+                part.TextureID = data.texture
+            end)
+            pcall(function()
+                part.Color = data.color
+            end)
+        end
+    end
+
+    skullTextures = {}
+
+    local head = ch:FindFirstChild("Head")
+    if head then
+        local dec = head:FindFirstChild("BonnySkullDecal")
+        if dec then dec:Destroy() end
+    end
+end
+
+local skT = NewToggle(TrollTab, L("skullTexture"), false, function(s)
+    skullOn = s
+    OnSound(s)
+
+    if s then
+        ApplySkull()
+    else
+        RemoveSkull()
+    end
+end)
+RegLang(skT, "skullTexture")
+
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(1)
+    if skullOn then
+        ApplySkull()
+    end
+end)
+
+-- SETTINGS
 local setSec = NewSection(SettingsTab, L("settings"))
 local sl2 = setSec:FindFirstChild("SectionLabel")
 if sl2 then RegLang(sl2, "settings") end
@@ -1921,21 +2096,19 @@ if sl2 then RegLang(sl2, "settings") end
 local lgL = Instance.new("TextLabel", SettingsTab)
 lgL.Size = UDim2.new(1, 0, 0, 26)
 lgL.BackgroundTransparency = 1
-lgL.Text = "  🌐  " .. L("language")
+lgL.Text = "  " .. L("language")
 lgL.TextColor3 = THEME.Gold
 lgL.Font = Enum.Font.GothamBold
 lgL.TextSize = 12
 lgL.TextXAlignment = Enum.TextXAlignment.Left
-RegLang(lgL, "language", "🌐  ")
+RegLang(lgL, "language")
 
-NewButton(SettingsTab, "🇬🇧  English", function()
-    PlayClick()
+NewButton(SettingsTab, "English", function()
     Lang.current = "en"
     ApplyLang()
 end)
 
-NewButton(SettingsTab, "🇷🇺  Русский", function()
-    PlayClick()
+NewButton(SettingsTab, "Russian", function()
     Lang.current = "ru"
     ApplyLang()
 end)
@@ -1943,12 +2116,12 @@ end)
 local clL = Instance.new("TextLabel", SettingsTab)
 clL.Size = UDim2.new(1, 0, 0, 26)
 clL.BackgroundTransparency = 1
-clL.Text = "  🔊  " .. L("clickSound")
+clL.Text = "  " .. L("clickSound")
 clL.TextColor3 = THEME.Gold
 clL.Font = Enum.Font.GothamBold
 clL.TextSize = 12
 clL.TextXAlignment = Enum.TextXAlignment.Left
-RegLang(clL, "clickSound", "🔊  ")
+RegLang(clL, "clickSound")
 
 local clBtns = {}
 
@@ -1982,12 +2155,12 @@ ClBtn("4. " .. L("c3"), 3)
 local dsL = Instance.new("TextLabel", SettingsTab)
 dsL.Size = UDim2.new(1, 0, 0, 26)
 dsL.BackgroundTransparency = 1
-dsL.Text = "  🔕  " .. L("disSound")
+dsL.Text = "  " .. L("disSound")
 dsL.TextColor3 = THEME.Gold
 dsL.Font = Enum.Font.GothamBold
 dsL.TextSize = 12
 dsL.TextXAlignment = Enum.TextXAlignment.Left
-RegLang(dsL, "disSound", "🔕  ")
+RegLang(dsL, "disSound")
 
 local dsBtns = {}
 
@@ -2016,15 +2189,16 @@ end
 DsBtn("1. " .. L("noSound") .. " (default)", 0)
 DsBtn("2. " .. L("disSound"), 1)
 
+-- LAUNCH
 for _, b in pairs(TabsBtns) do
     b.MouseButton1Click:Fire()
     break
 end
 
 StarterGui:SetCore("SendNotification", {
-    Title = "★ Bonny Hub",
+    Title = "Bonny Hub",
     Text = L("loaded"),
     Duration = 3
 })
 
-print("[Bonny Hub] ✨ Loaded successfully!")
+print("[Bonny Hub] Loaded successfully!")
